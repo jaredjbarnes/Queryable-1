@@ -1,13 +1,13 @@
 import * as assert from "assert";
 import Queryable from "./../Queryable";
-import { ExpressionBuilder } from "../ExpressionBuilder";
+import ExpressionBuilder from "../ExpressionBuilder";
 
-exports["Queryable: Constructor."] = function() {
+exports["Queryable: Constructor."] = function () {
     const queryable = new Queryable();
     assert.ok(true);
 };
 
-exports["Queryable: Constructor with query (where: single)"] = function() {
+exports["Queryable: Constructor with query (where: single)"] = function () {
     let queryable = new Queryable();
     queryable = queryable.where(expBuilder => {
         return expBuilder.property("firstName").isEqualTo("Jared");
@@ -15,12 +15,12 @@ exports["Queryable: Constructor with query (where: single)"] = function() {
 
     const query = queryable.getQuery();
 
-    assert.equal("equalTo", query.where.children[0].nodeName);
+    assert.equal("isEqualTo", query.where.children[0].nodeName);
     assert.equal("firstName", query.where.children[0].children[0].children[1].value);
     assert.equal("Jared", query.where.children[0].children[1].value);
 };
 
-exports["Queryable: Constructor with query (where: chain)"] = function() {
+exports["Queryable: Constructor with query (where: chain)"] = function () {
     let queryable = new Queryable();
     queryable = queryable
         .where(expBuilder => {
@@ -33,15 +33,15 @@ exports["Queryable: Constructor with query (where: chain)"] = function() {
     const query = queryable.getQuery();
 
     assert.equal("and", query.where.children[0].nodeName);
-    assert.equal("equalTo", query.where.children[0].children[0].nodeName);
+    assert.equal("isEqualTo", query.where.children[0].children[0].nodeName);
     assert.equal("firstName", query.where.children[0].children[0].children[0].children[1].value);
     assert.equal("Jared", query.where.children[0].children[0].children[1].value);
-    assert.equal("equalTo", query.where.children[0].children[1].nodeName);
+    assert.equal("isEqualTo", query.where.children[0].children[1].nodeName);
     assert.equal("lastName", query.where.children[0].children[1].children[0].children[1].value);
     assert.equal("Barnes", query.where.children[0].children[1].children[1].value);
 };
 
-exports["Queryable: Constructor with query (where: with ExpressionBuilder instance.)"] = function() {
+exports["Queryable: Constructor with query (where: with ExpressionBuilder instance.)"] = function () {
     const expressionBuilder = new ExpressionBuilder();
     const expression = expressionBuilder.property("firstName").isEqualTo("Jared");
     let queryable = new Queryable();
@@ -49,12 +49,12 @@ exports["Queryable: Constructor with query (where: with ExpressionBuilder instan
 
     const query = queryable.getQuery();
 
-    assert.equal("equalTo", query.where.children[0].nodeName);
+    assert.equal("isEqualTo", query.where.children[0].nodeName);
     assert.equal("firstName", query.where.children[0].children[0].children[1].value);
     assert.equal("Jared", query.where.children[0].children[1].value);
 };
 
-exports["Queryable: Constructor with query (where: w/o lambda or ExpressionBuilder instance)"] = function() {
+exports["Queryable: Constructor with query (where: w/o lambda or ExpressionBuilder instance)"] = function () {
     let queryable = new Queryable();
 
     assert.throws(() => {
@@ -62,7 +62,7 @@ exports["Queryable: Constructor with query (where: w/o lambda or ExpressionBuild
     });
 };
 
-exports["Queryable: Constructor with query (orderBy: single)"] = function() {
+exports["Queryable: Constructor with query (orderBy: single)"] = function () {
     let queryable = new Queryable();
     queryable = queryable.orderBy(expBuilder => {
         return expBuilder.property("firstName");
@@ -74,7 +74,7 @@ exports["Queryable: Constructor with query (orderBy: single)"] = function() {
     assert.equal("firstName", query.orderBy.children[0].children[0].children[1].value);
 };
 
-exports["Queryable: Constructor with query (orderBy: chain)"] = function() {
+exports["Queryable: Constructor with query (orderBy: chain)"] = function () {
     let queryable = new Queryable();
     queryable = queryable
         .orderBy(expBuilder => {
@@ -92,7 +92,7 @@ exports["Queryable: Constructor with query (orderBy: chain)"] = function() {
     assert.equal("lastName", query.orderBy.children[1].children[0].children[1].value);
 };
 
-exports["Queryable: Constructor with query (orderBy: with ExpressionBuilder instance.)"] = function() {
+exports["Queryable: Constructor with query (orderBy: with ExpressionBuilder instance.)"] = function () {
     const expressionBuilder = new ExpressionBuilder();
     const expression = expressionBuilder.property("firstName");
     let queryable = new Queryable();
@@ -104,7 +104,7 @@ exports["Queryable: Constructor with query (orderBy: with ExpressionBuilder inst
     assert.equal("firstName", query.orderBy.children[0].children[0].children[1].value);
 };
 
-exports["Queryable: Constructor with query (orderBy: with the same expression called twice.)"] = function() {
+exports["Queryable: Constructor with query (orderBy: with the same expression called twice.)"] = function () {
     let queryable = new Queryable();
     queryable = queryable
         .orderBy(expBuilder => {
@@ -119,7 +119,7 @@ exports["Queryable: Constructor with query (orderBy: with the same expression ca
     assert.equal(1, query.orderBy.children.length);
 };
 
-exports["Queryable: Constructor with query (orderBy: w/o lambda or ExpressionBuilder instance)"] = function() {
+exports["Queryable: Constructor with query (orderBy: w/o lambda or ExpressionBuilder instance)"] = function () {
     let queryable = new Queryable();
 
     assert.throws(() => {
@@ -127,49 +127,31 @@ exports["Queryable: Constructor with query (orderBy: w/o lambda or ExpressionBui
     });
 };
 
-exports["Queryable: Constructor with query (include: single)"] = function() {
+exports["Queryable: Constructor with query (include: single)"] = function () {
     let queryable = new Queryable();
-    queryable = queryable.include(expBuilder => {
-        return expBuilder.property("firstName");
-    });
+    queryable = queryable.include("property");
 
     const query = queryable.getQuery();
 
-    assert.equal("queryable", query.include.children[0].nodeName);
-    assert.equal("firstName", query.include.children[0].children[0].children[1].value);
+    assert.equal("propertyAccess", query.include.children[0].nodeName);
+    assert.equal("property", query.include.children[0].children[1].value);
 };
 
-exports["Queryable: Constructor with query (include: chain)"] = function() {
+exports["Queryable: Constructor with query (include: chain)"] = function () {
     let queryable = new Queryable();
     queryable = queryable
-        .include(expBuilder => {
-            return expBuilder.property("firstName");
-        })
-        .include(expBuilder => {
-            return expBuilder.property("lastName");
-        });
+        .include("propertyOne")
+        .include("propertyTwo");
 
     const query = queryable.getQuery();
 
-    assert.equal("queryable", query.include.children[0].nodeName);
-    assert.equal("firstName", query.include.children[0].children[0].children[1].value);
-    assert.equal("queryable", query.include.children[1].nodeName);
-    assert.equal("lastName", query.include.children[1].children[0].children[1].value);
+    assert.equal("propertyAccess", query.include.children[0].nodeName);
+    assert.equal("propertyOne", query.include.children[0].children[1].value);
+    assert.equal("propertyAccess", query.include.children[1].nodeName);
+    assert.equal("propertyTwo", query.include.children[1].children[1].value);
 };
 
-exports["Queryable: Constructor with query (include: with ExpressionBuilder instance.)"] = function() {
-    const expressionBuilder = new ExpressionBuilder();
-    const expression = expressionBuilder.property("firstName");
-    let queryable = new Queryable();
-    queryable = queryable.include(expression);
-
-    const query = queryable.getQuery();
-
-    assert.equal("queryable", query.include.children[0].nodeName);
-    assert.equal("firstName", query.include.children[0].children[0].children[1].value);
-};
-
-exports["Queryable: Constructor with query (include: w/o lambda or ExpressionBuilder instance)"] = function() {
+exports["Queryable: Constructor with query (include: w/o lambda or ExpressionBuilder instance)"] = function () {
     let queryable = new Queryable();
 
     assert.throws(() => {
@@ -177,39 +159,39 @@ exports["Queryable: Constructor with query (include: w/o lambda or ExpressionBui
     });
 };
 
-exports["Queryable: Constructor with query (take: value === number)"] = function() {
+exports["Queryable: Constructor with query (take: value === number)"] = function () {
     let queryable = new Queryable();
     queryable = queryable.take(10);
 
     const query = queryable.getQuery();
 
-    assert.equal(10, query.take.children[0].value);
+    assert.equal(10, query.take.value);
 };
 
-exports["Queryable: Constructor with query (take: value !== number)"] = function() {
+exports["Queryable: Constructor with query (take: value !== number)"] = function () {
     let queryable = new Queryable();
     assert.throws(() => {
         queryable = queryable.take();
     });
 };
 
-exports["Queryable: Constructor with query (skip: value === number)"] = function() {
+exports["Queryable: Constructor with query (skip: value === number)"] = function () {
     let queryable = new Queryable();
     queryable = queryable.skip(10);
 
     const query = queryable.getQuery();
 
-    assert.equal(10, query.skip.children[0].value);
+    assert.equal(10, query.skip.value);
 };
 
-exports["Queryable: Constructor with query (skip: value !== number)"] = function() {
+exports["Queryable: Constructor with query (skip: value !== number)"] = function () {
     let queryable = new Queryable();
     assert.throws(() => {
         queryable = queryable.skip();
     });
 };
 
-exports["Queryable: Constructor with query (or: single)"] = function() {
+exports["Queryable: Constructor with query (or: single)"] = function () {
     let queryable = new Queryable();
     queryable = queryable.or(expBuilder => {
         return expBuilder.property("firstName").isEqualTo("Jared");
@@ -217,12 +199,12 @@ exports["Queryable: Constructor with query (or: single)"] = function() {
 
     const query = queryable.getQuery();
 
-    assert.equal("equalTo", query.where.children[0].nodeName);
+    assert.equal("isEqualTo", query.where.children[0].nodeName);
     assert.equal("firstName", query.where.children[0].children[0].children[1].value);
     assert.equal("Jared", query.where.children[0].children[1].value);
 };
 
-exports["Queryable: Constructor with query (or: chain)"] = function() {
+exports["Queryable: Constructor with query (or: chain)"] = function () {
     let queryable = new Queryable();
     queryable = queryable
         .or(expBuilder => {
@@ -235,15 +217,15 @@ exports["Queryable: Constructor with query (or: chain)"] = function() {
     const query = queryable.getQuery();
 
     assert.equal("or", query.where.children[0].nodeName);
-    assert.equal("equalTo", query.where.children[0].children[0].nodeName);
+    assert.equal("isEqualTo", query.where.children[0].children[0].nodeName);
     assert.equal("firstName", query.where.children[0].children[0].children[0].children[1].value);
     assert.equal("Jared", query.where.children[0].children[0].children[1].value);
-    assert.equal("equalTo", query.where.children[0].children[1].nodeName);
+    assert.equal("isEqualTo", query.where.children[0].children[1].nodeName);
     assert.equal("lastName", query.where.children[0].children[1].children[0].children[1].value);
     assert.equal("Barnes", query.where.children[0].children[1].children[1].value);
 };
 
-exports["Queryable: Constructor with query (or: with ExpressionBuilder instance.)"] = function() {
+exports["Queryable: Constructor with query (or: with ExpressionBuilder instance.)"] = function () {
     const expressionBuilder = new ExpressionBuilder();
     const expression = expressionBuilder.property("firstName").isEqualTo("Jared");
     let queryable = new Queryable();
@@ -251,12 +233,12 @@ exports["Queryable: Constructor with query (or: with ExpressionBuilder instance.
 
     const query = queryable.getQuery();
 
-    assert.equal("equalTo", query.where.children[0].nodeName);
+    assert.equal("isEqualTo", query.where.children[0].nodeName);
     assert.equal("firstName", query.where.children[0].children[0].children[1].value);
     assert.equal("Jared", query.where.children[0].children[1].value);
 };
 
-exports["Queryable: Constructor with query (or: w/o lambda or ExpressionBuilder instance)"] = function() {
+exports["Queryable: Constructor with query (or: w/o lambda or ExpressionBuilder instance)"] = function () {
     let queryable = new Queryable();
 
     assert.throws(() => {
@@ -264,7 +246,7 @@ exports["Queryable: Constructor with query (or: w/o lambda or ExpressionBuilder 
     });
 };
 
-exports["Queryable: Constructor with query (and: single)"] = function() {
+exports["Queryable: Constructor with query (and: single)"] = function () {
     let queryable = new Queryable();
     queryable = queryable.and(expBuilder => {
         return expBuilder.property("firstName").isEqualTo("Jared");
@@ -272,12 +254,12 @@ exports["Queryable: Constructor with query (and: single)"] = function() {
 
     const query = queryable.getQuery();
 
-    assert.equal("equalTo", query.where.children[0].nodeName);
+    assert.equal("isEqualTo", query.where.children[0].nodeName);
     assert.equal("firstName", query.where.children[0].children[0].children[1].value);
     assert.equal("Jared", query.where.children[0].children[1].value);
 };
 
-exports["Queryable: Constructor with query (orderByDesc: single)"] = function() {
+exports["Queryable: Constructor with query (orderByDesc: single)"] = function () {
     let queryable = new Queryable();
     queryable = queryable.orderByDesc(expBuilder => {
         return expBuilder.property("firstName");
@@ -289,7 +271,7 @@ exports["Queryable: Constructor with query (orderByDesc: single)"] = function() 
     assert.equal("firstName", query.orderBy.children[0].children[0].children[1].value);
 };
 
-exports["Queryable: Constructor with query (orderByDesc: chain)"] = function() {
+exports["Queryable: Constructor with query (orderByDesc: chain)"] = function () {
     let queryable = new Queryable();
     queryable = queryable
         .orderByDesc(expBuilder => {
@@ -307,7 +289,7 @@ exports["Queryable: Constructor with query (orderByDesc: chain)"] = function() {
     assert.equal("lastName", query.orderBy.children[1].children[0].children[1].value);
 };
 
-exports["Queryable: Constructor with query (orderByDesc: with ExpressionBuilder instance.)"] = function() {
+exports["Queryable: Constructor with query (orderByDesc: with ExpressionBuilder instance.)"] = function () {
     const expressionBuilder = new ExpressionBuilder();
     const expression = expressionBuilder.property("firstName");
     let queryable = new Queryable();
@@ -319,7 +301,7 @@ exports["Queryable: Constructor with query (orderByDesc: with ExpressionBuilder 
     assert.equal("firstName", query.orderBy.children[0].children[0].children[1].value);
 };
 
-exports["Queryable: Constructor with query (orderByDesc: with the same expression called twice.)"] = function() {
+exports["Queryable: Constructor with query (orderByDesc: with the same expression called twice.)"] = function () {
     let queryable = new Queryable();
     queryable = queryable
         .orderByDesc(expBuilder => {
@@ -334,7 +316,7 @@ exports["Queryable: Constructor with query (orderByDesc: with the same expressio
     assert.equal(1, query.orderBy.children.length);
 };
 
-exports["Queryable: Constructor with query (orderByDesc: w/o lambda or ExpressionBuilder instance)"] = function() {
+exports["Queryable: Constructor with query (orderByDesc: w/o lambda or ExpressionBuilder instance)"] = function () {
     let queryable = new Queryable();
 
     assert.throws(() => {
@@ -342,7 +324,7 @@ exports["Queryable: Constructor with query (orderByDesc: w/o lambda or Expressio
     });
 };
 
-exports["Queryable: Constructor with query (setParameters: obj passed in)"] = function() {
+exports["Queryable: Constructor with query (setParameters: obj passed in)"] = function () {
     let queryable = new Queryable();
     const testParameters = { test1: 1, test2: 2 };
     queryable = queryable.setParameters(testParameters);
@@ -352,7 +334,7 @@ exports["Queryable: Constructor with query (setParameters: obj passed in)"] = fu
     assert.deepEqual(testParameters, query.parameters);
 };
 
-exports["Queryable: Constructor with query (setParameters: w/o parameters passed in)"] = function() {
+exports["Queryable: Constructor with query (setParameters: w/o parameters passed in)"] = function () {
     let queryable = new Queryable();
 
     assert.throws(() => {
@@ -360,7 +342,7 @@ exports["Queryable: Constructor with query (setParameters: w/o parameters passed
     });
 };
 
-exports["Queryable: Constructor with query (withParameters: obj passed in)"] = function() {
+exports["Queryable: Constructor with query (withParameters: obj passed in)"] = function () {
     let queryable = new Queryable();
     const testParameters = { test1: 1, test2: 2 };
     queryable = queryable.withParameters(testParameters);
@@ -370,7 +352,7 @@ exports["Queryable: Constructor with query (withParameters: obj passed in)"] = f
     assert.deepEqual(testParameters, query.parameters);
 };
 
-exports["Queryable: Constructor with query (withParameters: w/o parameters passed in)"] = function() {
+exports["Queryable: Constructor with query (withParameters: w/o parameters passed in)"] = function () {
     let queryable = new Queryable();
 
     assert.throws(() => {
@@ -378,7 +360,7 @@ exports["Queryable: Constructor with query (withParameters: w/o parameters passe
     });
 };
 
-exports["Queryable: Constructor with query (merge: merging queryable is empty)"] = function() {
+exports["Queryable: Constructor with query (merge: merging queryable is empty)"] = function () {
     let queryable1 = new Queryable();
     let queryable2 = new Queryable();
     queryable2 = queryable2.merge(queryable1);
@@ -388,7 +370,7 @@ exports["Queryable: Constructor with query (merge: merging queryable is empty)"]
     assert.equal(0, query.where.children.length);
 };
 
-exports["Queryable: Constructor with query (merge: queryable merging doesn't have anything to copy)"] = function() {
+exports["Queryable: Constructor with query (merge: queryable merging doesn't have anything to copy)"] = function () {
     let queryable1 = new Queryable();
     let queryable2 = new Queryable();
 
@@ -399,12 +381,12 @@ exports["Queryable: Constructor with query (merge: queryable merging doesn't hav
 
     const query = queryable2.getQuery();
 
-    assert.equal("equalTo", query.where.children[0].nodeName);
+    assert.equal("isEqualTo", query.where.children[0].nodeName);
     assert.equal("firstName", query.where.children[0].children[0].children[1].value);
     assert.equal("Jared", query.where.children[0].children[1].value);
 };
 
-exports["Queryable: Constructor with query (merge: queryable merging has a single where expression)"] = function() {
+exports["Queryable: Constructor with query (merge: queryable merging has a single where expression)"] = function () {
     let queryable1 = new Queryable();
     let queryable2 = new Queryable();
 
@@ -424,7 +406,7 @@ exports["Queryable: Constructor with query (merge: queryable merging has a singl
     assert.equal("Jared", query.where.children[0].children[1].children[1].value);
 };
 
-exports["Queryable: Constructor with query (merge: queryable merging has a chained where expression)"] = function() {
+exports["Queryable: Constructor with query (merge: queryable merging has a chained where expression)"] = function () {
     let queryable1 = new Queryable();
     let queryable2 = new Queryable();
 
@@ -448,21 +430,19 @@ exports["Queryable: Constructor with query (merge: queryable merging has a chain
     assert.equal("Jared", query.where.children[0].children[2].children[1].value);
 };
 
-exports["Queryable: Constructor with query (merge: merging queryable has an include expression)"] = function() {
+exports["Queryable: Constructor with query (merge: merging queryable has an include expression)"] = function () {
     let queryable1 = new Queryable();
     let queryable2 = new Queryable();
 
-    queryable1 = queryable1.include(expBuilder => {
-        return expBuilder.property("firstName");
-    });
+    queryable1 = queryable1.include("property");
     queryable2 = queryable2.merge(queryable1);
 
     const query = queryable2.getQuery();
 
-    assert.equal("firstName", query.include.children[0].children[0].children[1].value);
+    assert.equal("property", query.include.children[0].children[1].value);
 };
 
-exports["Queryable: Constructor with query (merge: merging queryable has an orderBy expression)"] = function() {
+exports["Queryable: Constructor with query (merge: merging queryable has an orderBy expression)"] = function () {
     let queryable1 = new Queryable();
     let queryable2 = new Queryable();
 
@@ -476,7 +456,7 @@ exports["Queryable: Constructor with query (merge: merging queryable has an orde
     assert.equal("firstName", query.orderBy.children[0].children[0].children[1].value);
 };
 
-exports["Queryable: Constructor with query (merge: merging queryable has the same orderBy expression as queryable merging)"] = function() {
+exports["Queryable: Constructor with query (merge: merging queryable has the same orderBy expression as queryable merging)"] = function () {
     let queryable1 = new Queryable();
     let queryable2 = new Queryable();
 
@@ -494,7 +474,7 @@ exports["Queryable: Constructor with query (merge: merging queryable has the sam
     assert.equal(1, query.orderBy.children.length);
 };
 
-exports["Queryable: Constructor with query (merge: w/o a queryable passed in)"] = function() {
+exports["Queryable: Constructor with query (merge: w/o a queryable passed in)"] = function () {
     let queryable = new Queryable();
 
     assert.throws(() => {
@@ -502,7 +482,7 @@ exports["Queryable: Constructor with query (merge: w/o a queryable passed in)"] 
     });
 };
 
-exports["Queryable: Constructor with toArrayAsync called."] = function() {
+exports["Queryable: Constructor with toArrayAsync called."] = function () {
     let queryable = new Queryable();
     queryable.provider = { toArrayAsync: () => Promise.resolve([]) };
 
@@ -511,7 +491,7 @@ exports["Queryable: Constructor with toArrayAsync called."] = function() {
     });
 };
 
-exports["Queryable: Constructor with toArrayAsync method called w/o provider."] = function() {
+exports["Queryable: Constructor with toArrayAsync method called w/o provider."] = function () {
     let queryable = new Queryable();
 
     assert.throws(() => {
@@ -519,7 +499,7 @@ exports["Queryable: Constructor with toArrayAsync method called w/o provider."] 
     });
 };
 
-exports["Queryable: Constructor with countAsync called."] = function() {
+exports["Queryable: Constructor with countAsync called."] = function () {
     let queryable = new Queryable();
     queryable.provider = { countAsync: queryable => Promise.resolve() };
 
@@ -528,7 +508,7 @@ exports["Queryable: Constructor with countAsync called."] = function() {
     });
 };
 
-exports["Queryable: Constructor with toArrayWithCountAsync called."] = function() {
+exports["Queryable: Constructor with toArrayWithCountAsync called."] = function () {
     let queryable = new Queryable();
     queryable.provider = { toArrayWithCountAsync: queryable => Promise.resolve() };
 
@@ -537,21 +517,21 @@ exports["Queryable: Constructor with toArrayWithCountAsync called."] = function(
     });
 };
 
-exports["Queryable: Constructor with ofType called."] = function() {
+exports["Queryable: Constructor with ofType called."] = function () {
     let queryable = new Queryable();
     const testType = { test: "test" };
     queryable = queryable.ofType(testType);
     assert.deepEqual(queryable.type, testType);
 };
 
-exports["Queryable: Constructor with ofType called."] = function() {
+exports["Queryable: Constructor with ofType called."] = function () {
     let queryable = new Queryable();
     const testType = { test: "test" };
     queryable = queryable.ofType(testType);
     assert.deepEqual(queryable.type, testType);
 };
 
-exports["Queryable: Constructor with copy called."] = function() {
+exports["Queryable: Constructor with copy called."] = function () {
     let queryable = new Queryable();
     let copiedQueryable = queryable.copy();
 

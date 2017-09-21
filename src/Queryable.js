@@ -1,63 +1,157 @@
-import { Expression, ValueExpression, OperationExpression } from "./Expression";
-import { ExpressionBuilder, OperationExpressionBuilder } from "./ExpressionBuilder";
-
-const assertHasProvider = queryable => {
-    if (!queryable.provider) {
-        throw new Error("No provider found.");
-    }
-};
-
-const copyQuery = query => {
-    var copy = {};
-
-    copy.where = query.where.copy();
-    copy.orderBy = query.orderBy.copy();
-    copy.include = query.include.copy();
-    copy.parameters = JSON.parse(JSON.stringify(query.parameters));
-    copy.take = query.take;
-    copy.skip = query.skip;
-
-    return copy;
-};
+import Expression from "./Expression";
+import ExpressionBuilder from "./ExpressionBuilder";
+import OperationExpression from "./OperationExpression";
+import OperationExpressionBuilder from "./OperationExpressionBuilder";
+import ValueExpression from "./ValueExpression";
 
 export default class Queryable {
-    constructor(type, query) {
-        query = query || {};
-
+    constructor(type, query = {}) {
         this.type = type || "Object";
         this.provider = null;
-        this.query = {};
+        this.query = query;
         this.query.parameters = (query && query.parameters) || {};
+        this._applyQuery(query);
+    }
 
+    _applyQuery(query) {
         if (query.where != null && query.where.nodeName === "where") {
             this.query.where = query.where;
         } else {
-            this.query.where = Expression.where();
+            this.query.where = new OperationExpression("where");
         }
 
         if (query.skip != null && query.skip.nodeName === "skip") {
             this.query.skip = query.skip;
         } else {
-            this.query.skip = Expression.skip(0);
+            this.query.skip = new ValueExpression("skip", 0);
         }
 
         if (query.take != null && query.take.nodeName === "take") {
             this.query.take = query.take;
         } else {
-            this.query.take = Expression.take(Infinity);
+            this.query.take = new ValueExpression("take", Infinity);
         }
 
         if (query.include != null && query.include.nodeName === "include") {
             this.query.include = query.include;
         } else {
-            this.query.include = Expression.include();
+            this.query.include = new OperationExpression("include");
         }
 
         if (query.orderBy != null && query.orderBy.nodeName === "orderBy") {
             this.query.orderBy = query.orderBy;
         } else {
-            this.query.orderBy = Expression.orderBy();
+            this.query.orderBy = new OperationExpression("orderBy");
         }
+    }
+
+    _assertHasProvider() {
+        if (!this.provider) {
+            throw new Error("No provider found.");
+        }
+    }
+
+    _copyQuery(query) {
+        let copy = {};
+
+        copy.where = query.where.copy();
+        copy.orderBy = query.orderBy.copy();
+        copy.include = query.include.copy();
+        copy.parameters = JSON.parse(JSON.stringify(query.parameters));
+        copy.take = query.take.copy();
+        copy.skip = query.skip.copy();
+
+        return copy;
+    }
+
+    _createQueryableFromLambda(type, lambda = () => { }) {
+        let query = this._copyQuery(this.getQuery());
+        let whereExpression;
+
+        if (typeof lambda === "function") {
+            whereExpression = lambda(new ExpressionBuilder(this.type));
+        } else if (lambda instanceof Expression) {
+            whereExpression = lambda;
+        } else {
+            throw new Error("Invalid Argument: Expected an expression, or function.");
+        }
+
+        if (!(whereExpression instanceof Expression)) {
+            throw new Error("Invalid expression: You may be missing a return.");
+        }
+
+        if (query.where.children.length === 0) {
+            query.where = whereExpression;
+        } else {
+
+            let rightExpression = whereExpression.children[0];
+            let leftExpression = query.where.children.pop();
+            let expression = new OperationExpression(type);
+
+            expression.children.push(
+                leftExpression,
+                rightExpression
+            );
+
+            query.where.children.push(expression);
+        }
+
+        return this.copy(query);
+    }
+
+    _createQueryableFromNumber(type, value) {
+        if (typeof value !== "number") {
+            throw new Error("Invalid Argument: Expected a number.");
+        }
+
+        let query = this._copyQuery(this.getQuery());
+        query[type] = new ValueExpression(type, value);
+
+        return this.copy(query);
+    }
+
+    _createQueryableFromOrderBy(type, lambda = () => { }) {
+        let whereExpression;
+        let propertyExpression;
+        let query = this._copyQuery(this.getQuery());
+
+        if (typeof lambda === "function") {
+            whereExpression = lambda(new ExpressionBuilder(this.type)).getExpression();
+        } else if (lambda instanceof OperationExpressionBuilder) {
+            whereExpression = lambda.getExpression();
+        } else {
+            throw new Error("Invalid Argument: Expected a OperationExpressionBuilder, or a function.");
+        }
+
+        if (!(whereExpression instanceof Expression)) {
+            throw new Error("Invalid expression: You may be missing a return.");
+        }
+
+        let expression = new OperationExpression(type);
+        propertyExpression = whereExpression.children[0];
+        expression.children.push(propertyExpression);
+
+        if (!query.orderBy.contains(propertyExpression)) {
+            query.orderBy.children.push(expression);
+            return this.copy(query);
+        } else {
+            return this;
+        }
+    }
+
+    and(lambda) {
+        return this._createQueryableFromLambda("and", lambda);
+    }
+
+    copy(query) {
+        let queryable = new Queryable(this.type, query || this._copyQuery(this.query));
+        queryable.provider = this.provider;
+        return queryable;
+    }
+
+    countAsync() {
+        this._assertHasProvider(this);
+        return this.provider.countAsync(this);
     }
 
     getExpression() {
@@ -68,167 +162,25 @@ export default class Queryable {
         return this.query;
     }
 
-    or(lambda) {
-        var rightExpression;
-        var query = copyQuery(this.getQuery());
-
-        if (typeof lambda === "function") {
-            lambda = lambda || function() {};
-            rightExpression = lambda.call(ExpressionBuilder, new ExpressionBuilder(this.type));
-        } else if (lambda instanceof Expression) {
-            rightExpression = lambda;
-        } else {
-            throw new Error("Expected an expression to be supplied.");
+    include(propertyName) {
+        if (typeof propertyName !== "string") {
+            throw new Error("Illegal Argument: Expected a string.");
         }
 
-        if (query.where.children.length === 0) {
-            query.where.children.push(rightExpression);
-        } else {
-            var leftExpression = query.where.children.pop();
-            query.where.children.push(Expression.or(leftExpression, rightExpression));
-        }
+        let query = this._copyQuery(this.getQuery());
+        let propertyAccess = new OperationExpression("propertyAccess");
 
-        return this.copy(query);
-    }
+        propertyAccess.children.push(
+            new ValueExpression("type", "Object"),
+            new ValueExpression("property", propertyName)
+        );
 
-    where(lambda) {
-        var rightExpression;
-        var query = copyQuery(this.getQuery());
-
-        if (typeof lambda === "function") {
-            lambda = lambda || function() {};
-            rightExpression = lambda.call(ExpressionBuilder, new ExpressionBuilder(this.type));
-        } else if (lambda instanceof Expression) {
-            rightExpression = lambda;
-        } else {
-            throw new Error("Expected an expression to be supplied.");
-        }
-
-        if (query.where.children.length === 0) {
-            query.where.children.push(rightExpression);
-        } else {
-            var leftExpression = query.where.children.pop();
-            query.where.children.push(Expression.and(leftExpression, rightExpression));
-        }
-
-        return this.copy(query);
-    }
-
-    and(lambda) {
-        return this.where(lambda);
-    }
-
-    take(value) {
-        if (typeof value !== "number") {
-            throw new Error("Illegal Argument Exception: value needs to be a number.");
-        }
-
-        var query = copyQuery(this.getQuery());
-        query.take = Expression.take(value);
-
-        return this.copy(query);
-    }
-
-    skip(value) {
-        if (typeof value !== "number") {
-            throw new Error("Illegal Argument Exception: value needs to be a number.");
-        }
-
-        var query = copyQuery(this.getQuery());
-        query.skip = Expression.skip(value);
-
-        return this.copy(query);
-    }
-
-    orderByDesc(lambda) {
-        var propertyExpression;
-        var query = copyQuery(this.getQuery());
-
-        if (typeof lambda === "function") {
-            lambda = lambda || function() {};
-            propertyExpression = lambda.call(ExpressionBuilder, new ExpressionBuilder(this.type)).getExpression();
-        } else if (lambda instanceof OperationExpressionBuilder) {
-            propertyExpression = lambda.getExpression();
-        } else {
-            throw new Error("Expected a property to orderByDesc.");
-        }
-
-        var descendingExpression = Expression.descending(propertyExpression);
-
-        if (!query.orderBy.contains(propertyExpression)) {
-            query.orderBy.children.push(descendingExpression);
+        if (!query.include.contains(propertyAccess)) {
+            query.include.children.push(propertyAccess);
             return this.copy(query);
         } else {
             return this;
         }
-    }
-
-    orderBy(lambda) {
-        var propertyExpression;
-        var query = copyQuery(this.getQuery());
-
-        if (typeof lambda === "function") {
-            lambda = lambda || function() {};
-            propertyExpression = lambda.call(ExpressionBuilder, new ExpressionBuilder(this.type)).getExpression();
-        } else if (lambda instanceof OperationExpressionBuilder) {
-            propertyExpression = lambda.getExpression();
-        } else {
-            throw new Error("Expected a property to orderBy.");
-        }
-
-        var ascendingExpression = Expression.ascending(propertyExpression);
-
-        if (!query.orderBy.contains(propertyExpression)) {
-            query.orderBy.children.push(ascendingExpression);
-            return this.copy(query);
-        } else {
-            return this;
-        }
-    }
-
-    setParameters(params) {
-        if (!params) {
-            throw new Error("Expected parameters to be passed in.");
-        }
-        var parameters = this.query.parameters;
-
-        Object.keys(params).forEach(function(key) {
-            parameters[key] = params[key];
-        });
-        return this;
-    }
-
-    withParameters(params) {
-        if (!params) {
-            throw new Error("Expected parameters to be passed in.");
-        }
-
-        var parameters = (this.query.parameters = {});
-        Object.keys(params).forEach(function(key) {
-            parameters[key] = params[key];
-        });
-        return this;
-    }
-
-    include(lambda) {
-        var propertyExpression;
-        var query = copyQuery(this.getQuery());
-
-        if (typeof lambda === "function") {
-            lambda = lambda || function() {};
-            propertyExpression = lambda.call(ExpressionBuilder, new ExpressionBuilder(this.type)).getExpression();
-        } else if (lambda instanceof OperationExpressionBuilder) {
-            propertyExpression = lambda.getExpression();
-        } else {
-            throw new Error("Expected a property to include.");
-        }
-
-        if (propertyExpression.nodeName !== "queryable") {
-            propertyExpression = Expression.queryable(propertyExpression, Expression.expression(Expression.where()));
-        }
-
-        query.include.children.push(propertyExpression);
-        return this.copy(query);
     }
 
     merge(queryable) {
@@ -236,10 +188,10 @@ export default class Queryable {
             throw new Error("Expected a queryable to be passed in.");
         }
 
-        var clone = this.copy();
-        var cloneQuery = clone.getQuery();
-        var query = queryable.getQuery();
-        var rightExpression = query.where.children[0];
+        let clone = this.copy();
+        let cloneQuery = clone.getQuery();
+        let query = queryable.getQuery();
+        let rightExpression = query.where.children[0];
 
         if (rightExpression != null) {
             // No need to copy if there is nothing to copy.
@@ -248,16 +200,23 @@ export default class Queryable {
             } else if (cloneQuery.where.children.length === 1 && cloneQuery.where.children[0].nodeName === "and") {
                 cloneQuery.where.children[0].children.push(rightExpression.copy());
             } else {
-                var leftExpression = cloneQuery.where.children.pop();
-                cloneQuery.where.children.push(Expression.and(leftExpression, rightExpression.copy()));
+                let leftExpression = cloneQuery.where.children.pop();
+                let andExpression = new OperationExpression("and");
+
+                andExpression.children.push(
+                    leftExpression,
+                    rightExpression.copy()
+                );
+
+                cloneQuery.where.children.push(andExpression);
             }
         }
 
-        query.include.children.forEach(function(expression) {
+        query.include.children.forEach(function (expression) {
             cloneQuery.include.children.push(expression.copy());
         });
 
-        query.orderBy.children.forEach(function(expression) {
+        query.orderBy.children.forEach(function (expression) {
             if (!cloneQuery.orderBy.contains(expression)) {
                 cloneQuery.orderBy.children.push(expression.copy());
             }
@@ -266,30 +225,72 @@ export default class Queryable {
         return this.copy(cloneQuery);
     }
 
+    ofType(type) {
+        let queryable = new Queryable(type);
+        queryable.provider = this.provider;
+        return queryable;
+    }
+
+    or(lambda) {
+        return this._createQueryableFromLambda("or", lambda);
+    }
+
+    orderBy(lambda) {
+        return this._createQueryableFromOrderBy("ascending", lambda);
+    }
+
+    orderBy(lambda) {
+        return this._createQueryableFromOrderBy("ascending", lambda);
+    }
+
+    orderByDesc(lambda) {
+        return this._createQueryableFromOrderBy("descending", lambda);
+    }
+
+    take(value) {
+        return this._createQueryableFromNumber("take", value);
+    }
+
     toArrayAsync() {
-        assertHasProvider(this);
+        this._assertHasProvider(this);
         return this.provider.toArrayAsync(this);
     }
 
-    countAsync() {
-        assertHasProvider(this);
-        return this.provider.countAsync(this);
-    }
-
     toArrayWithCountAsync() {
-        assertHasProvider(this);
+        this._assertHasProvider(this);
         return this.provider.toArrayWithCountAsync(this);
     }
 
-    ofType(type) {
-        var queryable = new Queryable(type);
-        queryable.provider = this.provider;
-        return queryable;
+    setParameters(params) {
+        if (params == null) {
+            throw new Error("Null Argument Exception.");
+        }
+        let parameters = this.query.parameters;
+
+        Object.keys(params).forEach(function (key) {
+            parameters[key] = params[key];
+        });
+        return this;
     }
 
-    copy(query) {
-        var queryable = new Queryable(this.type, query || copyQuery(this.query));
-        queryable.provider = this.provider;
-        return queryable;
+    skip(value) {
+        return this._createQueryableFromNumber("skip", value);
     }
+
+    where(lambda) {
+        return this._createQueryableFromLambda("and", lambda);
+    }
+
+    withParameters(params) {
+        if (params == null) {
+            throw new Error("Null ArgumentException");
+        }
+
+        let parameters = (this.query.parameters = {});
+        Object.keys(params).forEach(function (key) {
+            parameters[key] = params[key];
+        });
+        return this;
+    }
+
 }

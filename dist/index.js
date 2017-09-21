@@ -70,7 +70,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ 	return __webpack_require__(__webpack_require__.s = 3);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -85,10 +85,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -109,443 +105,117 @@ var Expression = function () {
         value: function isEqualTo() {
             throw new Error("Meant to be overriden");
         }
-    }], [{
-        key: "getExpressionType",
-        value: function getExpressionType(value) {
-            if (value instanceof Expression) {
-                return value;
-            }
-
-            if (typeof value === "string") {
-                return Expression.string(value);
-            } else if (typeof value === "function") {
-                return Expression["function"](value);
-            } else if (typeof value === "number") {
-                return Expression.number(value);
-            } else if (typeof value === "boolean") {
-                return Expression.boolean(value);
-            } else if (value === null) {
-                return Expression["null"](value);
-                return Expression["undefined"](value);
-            } else if (Array.isArray(value)) {
-                return Expression.array(value);
-            } else if (value instanceof Date) {
-                return Expression.date(value);
-            } else {
-                return Expression.object(value);
-            }
-        }
-    }, {
-        key: "property",
-        value: function property(value) {
-            return new ValueExpression("property", value);
-        }
-    }, {
-        key: "constant",
-        value: function constant(value) {
-            return new ValueExpression("constant", value);
-        }
-    }, {
-        key: "boolean",
-        value: function boolean(value) {
-            var expression = new ValueExpression("boolean");
-            expression.value = value;
-            return expression;
-        }
-    }, {
-        key: "string",
-        value: function string(value) {
-            var expression = new ValueExpression("string");
-            expression.value = value;
-            return expression;
-        }
-    }, {
-        key: "number",
-        value: function number(value) {
-            var expression = new ValueExpression("number");
-            expression.value = value;
-            return expression;
-        }
-    }, {
-        key: "object",
-        value: function object(value) {
-            var expression = new ValueExpression("object");
-            expression.value = value;
-            return expression;
-        }
-    }, {
-        key: "date",
-        value: function date(value) {
-            var expression = new ValueExpression("date");
-            expression.value = value;
-            return expression;
-        }
-    }, {
-        key: "function",
-        value: function _function(value) {
-            var expression = new ValueExpression("function");
-            expression.value = value;
-            return expression;
-        }
-    }, {
-        key: "type",
-        value: function type(value) {
-            var expression = new ValueExpression("type");
-            expression.value = value || Object;
-            return expression;
-        }
-    }, {
-        key: "null",
-        value: function _null(value) {
-            var expression = new ValueExpression("null");
-            expression.value = value;
-            return expression;
-        }
-    }, {
-        key: "undefined",
-        value: function undefined(value) {
-            var expression = new ValueExpression("undefined");
-            expression.value = value;
-            return expression;
-        }
-    }, {
-        key: "array",
-        value: function array(value) {
-            var expression = new ValueExpression("array");
-            expression.value = value;
-            return expression;
-        }
-    }, {
-        key: "queryable",
-        value: function queryable(leftExpression, rightExpression) {
-            var expression = new OperationExpression("queryable");
-            expression.children.push(leftExpression, rightExpression);
-            return expression;
-        }
-
-        //
-        // OperationExpression helpers
-        //
-
-    }, {
-        key: "equalTo",
-        value: function equalTo() {
-            var expression = new OperationExpression("equalTo");
-            Array.prototype.slice.call(arguments, 0).forEach(function (arg) {
-                expression.children.push(arg);
-            });
-            return expression;
-        }
-    }, {
-        key: "notEqualTo",
-        value: function notEqualTo() {
-            var expression = new OperationExpression("notEqualTo");
-            Array.prototype.slice.call(arguments, 0).forEach(function (arg) {
-                expression.children.push(arg);
-            });
-            return expression;
-        }
-    }, {
-        key: "or",
-        value: function or() {
-            var expression = new OperationExpression("or");
-            Array.prototype.slice.call(arguments, 0).forEach(function (arg) {
-                expression.children.push(arg);
-            });
-            return expression;
-        }
-    }, {
-        key: "and",
-        value: function and() {
-            var expression = new OperationExpression("and");
-            Array.prototype.slice.call(arguments, 0).forEach(function (arg) {
-                expression.children.push(arg);
-            });
-            return expression;
-        }
-    }, {
-        key: "where",
-        value: function where() {
-            var expression = new OperationExpression("where");
-            Array.prototype.slice.call(arguments, 0).forEach(function (arg) {
-                expression.children.push(arg);
-            });
-            return expression;
-        }
-    }, {
-        key: "greaterThan",
-        value: function greaterThan() {
-            var expression = new OperationExpression("greaterThan");
-            Array.prototype.slice.call(arguments, 0).forEach(function (arg) {
-                expression.children.push(arg);
-            });
-            return expression;
-        }
-    }, {
-        key: "lessThan",
-        value: function lessThan() {
-            var expression = new OperationExpression("lessThan");
-            Array.prototype.slice.call(arguments, 0).forEach(function (arg) {
-                expression.children.push(arg);
-            });
-            return expression;
-        }
-    }, {
-        key: "greaterThanOrEqualTo",
-        value: function greaterThanOrEqualTo() {
-            var expression = new OperationExpression("greaterThanOrEqualTo");
-            Array.prototype.slice.call(arguments, 0).forEach(function (arg) {
-                expression.children.push(arg);
-            });
-            return expression;
-        }
-    }, {
-        key: "lessThanOrEqualTo",
-        value: function lessThanOrEqualTo() {
-            var expression = new OperationExpression("lessThanOrEqualTo");
-            Array.prototype.slice.call(arguments, 0).forEach(function (arg) {
-                expression.children.push(arg);
-            });
-            return expression;
-        }
-    }, {
-        key: "orderBy",
-        value: function orderBy() {
-            var expression = new OperationExpression("orderBy");
-            Array.prototype.slice.call(arguments, 0).forEach(function (arg) {
-                expression.children.push(arg);
-            });
-            return expression;
-        }
-    }, {
-        key: "descending",
-        value: function descending() {
-            var expression = new OperationExpression("descending");
-            Array.prototype.slice.call(arguments, 0).forEach(function (arg) {
-                expression.children.push(arg);
-            });
-            return expression;
-        }
-    }, {
-        key: "ascending",
-        value: function ascending() {
-            var expression = new OperationExpression("ascending");
-            Array.prototype.slice.call(arguments, 0).forEach(function (arg) {
-                expression.children.push(arg);
-            });
-            return expression;
-        }
-    }, {
-        key: "skip",
-        value: function skip(value) {
-            var expression = new OperationExpression("skip");
-            var valueExpression = Expression.constant(value);
-            expression.children.push(valueExpression);
-
-            return expression;
-        }
-    }, {
-        key: "take",
-        value: function take(value) {
-            var expression = new OperationExpression("take");
-            var valueExpression = Expression.constant(value);
-            expression.children.push(valueExpression);
-
-            return expression;
-        }
-    }, {
-        key: "buildOperatorExpression",
-        value: function buildOperatorExpression(name) {
-            var expression = new OperationExpression(name);
-            var args = Array.prototype.slice.call(arguments, 1);
-            args.forEach(function (arg) {
-                expression.children.push(arg);
-            });
-
-            return expression;
-        }
-    }, {
-        key: "guid",
-        value: function guid() {
-            var expression = new OperationExpression("guid");
-            Array.prototype.slice.call(arguments, 0).forEach(function (arg) {
-                expression.children.push(arg);
-            });
-            return expression;
-        }
-    }, {
-        key: "substring",
-        value: function substring() {
-            var expression = new OperationExpression("substring");
-            Array.prototype.slice.call(arguments, 0).forEach(function (arg) {
-                expression.children.push(arg);
-            });
-            return expression;
-        }
-    }, {
-        key: "substringOf",
-        value: function substringOf() {
-            var expression = new OperationExpression("substringOf");
-            Array.prototype.slice.call(arguments, 0).forEach(function (arg) {
-                expression.children.push(arg);
-            });
-            return expression;
-        }
-    }, {
-        key: "startsWith",
-        value: function startsWith() {
-            var expression = new OperationExpression("startsWith");
-            Array.prototype.slice.call(arguments, 0).forEach(function (arg) {
-                expression.children.push(arg);
-            });
-            return expression;
-        }
-    }, {
-        key: "endsWith",
-        value: function endsWith() {
-            var expression = new OperationExpression("endsWith");
-            Array.prototype.slice.call(arguments, 0).forEach(function (arg) {
-                expression.children.push(arg);
-            });
-            return expression;
-        }
-    }, {
-        key: "isIn",
-        value: function isIn(property, array) {
-            var expression = new OperationExpression("isIn");
-            Array.prototype.slice.call(arguments, 0).forEach(function (arg) {
-                expression.children.push(arg);
-            });
-            return expression;
-        }
-    }, {
-        key: "isNotIn",
-        value: function isNotIn(property, array) {
-            var expression = new OperationExpression("isNotIn");
-            Array.prototype.slice.call(arguments, 0).forEach(function (arg) {
-                expression.children.push(arg);
-            });
-            return expression;
-        }
-    }, {
-        key: "include",
-        value: function include() {
-            var expression = new OperationExpression("include");
-            Array.prototype.slice.call(arguments, 0).forEach(function (arg) {
-                expression.children.push(arg);
-            });
-            return expression;
-        }
-    }, {
-        key: "any",
-        value: function any(propertyAccessExpression, expression) {
-            var anyExpression = new OperationExpression("any");
-            var expressionExpression = Expression.expression(expression);
-
-            anyExpression.children.push(propertyAccessExpression, expressionExpression);
-            return anyExpression;
-        }
-    }, {
-        key: "all",
-        value: function all(propertyAccessExpression, expression) {
-            var allExpression = new OperationExpression("all");
-            var expressionExpression = Expression.expression(expression);
-
-            allExpression.children.push(propertyAccessExpression, expressionExpression);
-            return allExpression;
-        }
-    }, {
-        key: "expression",
-        value: function expression(value) {
-            var expresssionExpression = new ValueExpression("expression", value);
-
-            return expresssionExpression;
-        }
-    }, {
-        key: "propertyAccess",
-        value: function propertyAccess(leftExpression, propertyName) {
-            var propertyExpression = Expression.property(propertyName);
-            var propertyAccessExpression = new OperationExpression("propertyAccess");
-            propertyAccessExpression.children.push(leftExpression, propertyExpression);
-
-            return propertyAccessExpression;
-        }
-    }, {
-        key: "contains",
-        value: function contains(type, namespace, expression) {
-            var containsExpression = new OperationExpression("contains");
-            var ofTypeExpression = new ValueExpression("ofType", type);
-            var propertyExpression = new ValueExpression("property", namespace);
-
-            containsExpression.children.push(ofTypeExpression, propertyExpression, expression);
-
-            return containsExpression;
-        }
-    }, {
-        key: "intersects",
-        value: function intersects(type, namespace, expression) {
-            var intersectsExpression = new OperationExpression("intersects");
-            var ofTypeExpression = new ValueExpression("ofType", type);
-            var propertyExpression = new ValueExpression("property", namespace);
-
-            intersectsExpression.children.push(ofTypeExpression, propertyExpression, expression);
-
-            return intersectsExpression;
-        }
     }]);
 
     return Expression;
 }();
 
-var ValueExpression = function (_Expression) {
-    _inherits(ValueExpression, _Expression);
+exports.default = Expression;
+//# sourceMappingURL=Expression.js.map
 
-    function ValueExpression(nodeName, value) {
-        _classCallCheck(this, ValueExpression);
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
 
-        var _this = _possibleConstructorReturn(this, (ValueExpression.__proto__ || Object.getPrototypeOf(ValueExpression)).call(this));
+"use strict";
 
-        _this.value = value;
-        _this.nodeName = nodeName;
-        return _this;
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _OperationExpressionBuilder = __webpack_require__(5);
+
+var _OperationExpressionBuilder2 = _interopRequireDefault(_OperationExpressionBuilder);
+
+var _OperationExpression = __webpack_require__(2);
+
+var _OperationExpression2 = _interopRequireDefault(_OperationExpression);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var ExpressionBuilder = function () {
+    function ExpressionBuilder(type) {
+        _classCallCheck(this, ExpressionBuilder);
+
+        this.type = type || "Object";
     }
 
-    _createClass(ValueExpression, [{
-        key: "copy",
-        value: function copy() {
-            return new ValueExpression(this.nodeName, this.value);
+    _createClass(ExpressionBuilder, [{
+        key: "property",
+        value: function property(_property) {
+            var whereExpression = new _OperationExpression2.default("where");
+            return new _OperationExpressionBuilder2.default(this.type, _property, whereExpression);
         }
     }, {
-        key: "isEqualTo",
-        value: function isEqualTo(node) {
-            if (node && this.nodeName === node.nodeName && this.value === node.value) {
-                return true;
-            }
-            return false;
+        key: "and",
+        value: function and() {
+            var andExpression = new _OperationExpression2.default("and");
+            andExpression.children = Array.from(arguments);
+
+            return andExpression;
         }
     }, {
-        key: "contains",
-        value: function contains(node) {
-            return this.isEqualTo(node);
+        key: "or",
+        value: function or() {
+            var orExpression = new _OperationExpression2.default("or");
+            orExpression.children = Array.from(arguments);
+
+            return orExpression;
+        }
+    }, {
+        key: "value",
+        value: function value() {
+            var whereExpression = new _OperationExpression2.default("where");
+            return new _OperationExpressionBuilder2.default(this.type, null, whereExpression);
         }
     }]);
 
-    return ValueExpression;
-}(Expression);
+    return ExpressionBuilder;
+}();
 
-var OperationExpression = function (_Expression2) {
-    _inherits(OperationExpression, _Expression2);
+exports.default = ExpressionBuilder;
+//# sourceMappingURL=ExpressionBuilder.js.map
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _Expression2 = __webpack_require__(0);
+
+var _Expression3 = _interopRequireDefault(_Expression2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var OperationExpression = function (_Expression) {
+    _inherits(OperationExpression, _Expression);
 
     function OperationExpression(nodeName) {
         _classCallCheck(this, OperationExpression);
 
-        var _this2 = _possibleConstructorReturn(this, (OperationExpression.__proto__ || Object.getPrototypeOf(OperationExpression)).call(this));
+        var _this = _possibleConstructorReturn(this, (OperationExpression.__proto__ || Object.getPrototypeOf(OperationExpression)).call(this));
 
-        var args = Array.prototype.slice.call(arguments, 0);
-
-        _this2.nodeName = nodeName;
-        _this2.children = args.slice(1);
-        return _this2;
+        _this.nodeName = nodeName;
+        return _this;
     }
 
     _createClass(OperationExpression, [{
@@ -578,11 +248,11 @@ var OperationExpression = function (_Expression2) {
     }, {
         key: "contains",
         value: function contains(node) {
-            var _this3 = this;
+            var _this2 = this;
 
             if (node.nodeName === this.nodeName && Array.isArray(node.children)) {
                 var matched = node.children.every(function (childNode, index) {
-                    return childNode.contains(_this3.children[index]);
+                    return childNode.contains(_this2.children[index]);
                 });
 
                 if (matched) {
@@ -597,13 +267,13 @@ var OperationExpression = function (_Expression2) {
     }, {
         key: "getMatchingNodes",
         value: function getMatchingNodes(node, matchedNodes) {
-            var _this4 = this;
+            var _this3 = this;
 
             matchedNodes = Array.isArray(matchedNodes) ? matchedNodes : [];
 
             if (node.nodeName === this.nodeName && Array.isArray(node.children)) {
                 var matched = node.children.every(function (childNode, index) {
-                    return childNode.contains(_this4.children[index], matchedNodes);
+                    return childNode.contains(_this3.children[index], matchedNodes);
                 });
 
                 if (matched) {
@@ -622,205 +292,13 @@ var OperationExpression = function (_Expression2) {
     }]);
 
     return OperationExpression;
-}(Expression);
+}(_Expression3.default);
 
-exports.Expression = Expression;
-exports.ValueExpression = ValueExpression;
-exports.OperationExpression = OperationExpression;
-//# sourceMappingURL=Expression.js.map
+exports.default = OperationExpression;
+//# sourceMappingURL=OperationExpression.js.map
 
 /***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.OperationExpressionBuilder = exports.ExpressionBuilder = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _Expression = __webpack_require__(0);
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var returnExpression = function returnExpression(expression) {
-    return expression;
-};
-
-var OperationExpressionBuilder = function () {
-    function OperationExpressionBuilder(getLeftExpression) {
-        _classCallCheck(this, OperationExpressionBuilder);
-
-        this.getLeftExpression = getLeftExpression || returnExpression;
-    }
-
-    _createClass(OperationExpressionBuilder, [{
-        key: "any",
-        value: function any(fn) {
-            var expressionBuilder = new ExpressionBuilder();
-            var expression = fn(expressionBuilder);
-            return _Expression.Expression.any(this.getLeftExpression(), expression);
-        }
-    }, {
-        key: "where",
-        value: function where(fn) {
-            var propertyAccessExpression = this.getLeftExpression();
-
-            this.getLeftExpression = function () {
-                var expressionBuilder = new ExpressionBuilder(Object);
-                var expression = fn(expressionBuilder);
-
-                return _Expression.Expression.queryable(propertyAccessExpression, _Expression.Expression.expression(_Expression.Expression.where(expression)));
-            };
-
-            return this;
-        }
-    }, {
-        key: "all",
-        value: function all(fn) {
-            var expressionBuilder = new ExpressionBuilder();
-            var expression = fn(expressionBuilder);
-            return _Expression.Expression.all(this.getLeftExpression(), expression);
-        }
-    }, {
-        key: "isEqualTo",
-        value: function isEqualTo(value) {
-            var constant = _Expression.Expression.getExpressionType(value);
-            return _Expression.Expression.equalTo(this.getLeftExpression(), constant);
-        }
-    }, {
-        key: "isNotEqualTo",
-        value: function isNotEqualTo(value) {
-            var constant = _Expression.Expression.getExpressionType(value);
-            return _Expression.Expression.notEqualTo(this.getLeftExpression(), constant);
-        }
-    }, {
-        key: "contains",
-        value: function contains(value) {
-            var constant = _Expression.Expression.getExpressionType(value);
-            return _Expression.Expression.substringOf(this.getLeftExpression(), constant);
-        }
-    }, {
-        key: "isIn",
-        value: function isIn(array) {
-            if (Array.isArray(array)) {
-                return _Expression.Expression.isIn(this.getLeftExpression(), _Expression.Expression.array(array));
-            } else {
-                throw new Error("isIn is expecting to be passed an array!");
-            }
-        }
-    }, {
-        key: "isNotIn",
-        value: function isNotIn(array) {
-            if (Array.isArray(array)) {
-                return _Expression.Expression.isNotIn(this.getLeftExpression(), _Expression.Expression.array(array));
-            } else {
-                throw new Error("isNotIn is expecting to be passed an array!");
-            }
-        }
-    }, {
-        key: "isGreaterThan",
-        value: function isGreaterThan(value) {
-            var constant = _Expression.Expression.getExpressionType(value);
-            return _Expression.Expression.greaterThan(this.getLeftExpression(), constant);
-        }
-    }, {
-        key: "isGreaterThanOrEqualTo",
-        value: function isGreaterThanOrEqualTo(value) {
-            var constant = _Expression.Expression.getExpressionType(value);
-            return _Expression.Expression.greaterThanOrEqualTo(this.getLeftExpression(), constant);
-        }
-    }, {
-        key: "isLessThanOrEqualTo",
-        value: function isLessThanOrEqualTo(value) {
-            var constant = _Expression.Expression.getExpressionType(value);
-            return _Expression.Expression.lessThanOrEqualTo(this.getLeftExpression(), constant);
-        }
-    }, {
-        key: "isLessThan",
-        value: function isLessThan(value) {
-            var constant = _Expression.Expression.getExpressionType(value);
-            return _Expression.Expression.lessThan(this.getLeftExpression(), constant);
-        }
-    }, {
-        key: "endsWith",
-        value: function endsWith(value) {
-            return _Expression.Expression.endsWith(this.getLeftExpression(), _Expression.Expression.string(value));
-        }
-    }, {
-        key: "startsWith",
-        value: function startsWith(value) {
-            return _Expression.Expression.startsWith(this.getLeftExpression(), _Expression.Expression.string(value));
-        }
-    }, {
-        key: "property",
-        value: function property(value) {
-            var _this = this;
-
-            return new OperationExpressionBuilder(function () {
-                return _Expression.Expression.propertyAccess(_this.getLeftExpression(), value);
-            });
-        }
-    }, {
-        key: "getExpression",
-        value: function getExpression() {
-            return this.getLeftExpression();
-        }
-    }]);
-
-    return OperationExpressionBuilder;
-}();
-
-var ExpressionBuilder = function () {
-    function ExpressionBuilder(type) {
-        _classCallCheck(this, ExpressionBuilder);
-
-        this.type = type || Object;
-    }
-
-    _createClass(ExpressionBuilder, [{
-        key: "property",
-        value: function property(_property) {
-            var _this2 = this;
-
-            return new OperationExpressionBuilder(function () {
-                return _Expression.Expression.propertyAccess(_Expression.Expression.type(_this2.type), _property);
-            });
-        }
-    }, {
-        key: "and",
-        value: function and() {
-            return _Expression.Expression.and.apply(_Expression.Expression, arguments);
-        }
-    }, {
-        key: "or",
-        value: function or() {
-            return _Expression.Expression.or.apply(_Expression.Expression, arguments);
-        }
-    }, {
-        key: "value",
-        value: function value() {
-            var _this3 = this;
-
-            return new OperationExpressionBuilder(function () {
-                return _Expression.Expression.type(_this3.type);
-            });
-        }
-    }]);
-
-    return ExpressionBuilder;
-}();
-
-exports.ExpressionBuilder = ExpressionBuilder;
-exports.OperationExpressionBuilder = OperationExpressionBuilder;
-//# sourceMappingURL=ExpressionBuilder.js.map
-
-/***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -831,7 +309,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.ExpressionVisitor = exports.ExpressionBuilder = exports.Expression = exports.Queryable = undefined;
 
-var _Queryable = __webpack_require__(3);
+var _Queryable = __webpack_require__(4);
 
 var _Queryable2 = _interopRequireDefault(_Queryable);
 
@@ -843,7 +321,7 @@ var _ExpressionBuilder = __webpack_require__(1);
 
 var _ExpressionBuilder2 = _interopRequireDefault(_ExpressionBuilder);
 
-var _ExpressionVisitor = __webpack_require__(4);
+var _ExpressionVisitor = __webpack_require__(7);
 
 var _ExpressionVisitor2 = _interopRequireDefault(_ExpressionVisitor);
 
@@ -856,7 +334,7 @@ exports.ExpressionVisitor = _ExpressionVisitor2.default;
 //# sourceMappingURL=index.js.map
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1195,7 +673,275 @@ exports.default = Queryable;
 //# sourceMappingURL=Queryable.js.map
 
 /***/ }),
-/* 4 */
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _ValueExpression = __webpack_require__(6);
+
+var _ValueExpression2 = _interopRequireDefault(_ValueExpression);
+
+var _OperationExpression = __webpack_require__(2);
+
+var _OperationExpression2 = _interopRequireDefault(_OperationExpression);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var OperationExpressionBuilder = function () {
+    function OperationExpressionBuilder(type, property, rootExpression, currentExpression) {
+        _classCallCheck(this, OperationExpressionBuilder);
+
+        this.type = type;
+        this.propertyName = property;
+        this.rootExpression = rootExpression;
+        this.currentExpression = currentExpression || rootExpression;
+    }
+
+    _createClass(OperationExpressionBuilder, [{
+        key: "_createArrayOperationExpression",
+        value: function _createArrayOperationExpression(type, array) {
+            var propertyAccessExpression = new _OperationExpression2.default("propertyAccess");
+            propertyAccessExpression.children.push(new _ValueExpression2.default("type", this.type), new _ValueExpression2.default("property", this.propertyName));
+
+            if (Array.isArray(array)) {
+                var constant = this._getConstant(array);
+                var arrayExpression = new _OperationExpression2.default(type);
+                arrayExpression.children.push(propertyAccessExpression, constant);
+
+                this.currentExpression.children.push(arrayExpression);
+                return this.rootExpression;
+            } else {
+                throw new Error("Invalid Argument: Expected an array.");
+            }
+        }
+    }, {
+        key: "_createLambdaOperationExpression",
+        value: function _createLambdaOperationExpression(type, lambda) {
+            if (typeof lambda !== "function") {
+                throw new Error("Invalid Argument: Expected a function.");
+            }
+
+            var propertyAccessExpression = new _OperationExpression2.default("propertyAccess");
+            propertyAccessExpression.children.push(new _ValueExpression2.default("type", this.type), new _ValueExpression2.default("property", this.propertyName));
+
+            var expressionBuilder = new ExpressionBuilder();
+            var expression = lambda(expressionBuilder);
+
+            var lambdaExpression = new _OperationExpression2.default(type);
+            lambdaExpression.children.push(propertyAccessExpression, expression);
+
+            this.currentExpression.children.push(lambdaExpression);
+
+            return this.rootExpression;
+        }
+    }, {
+        key: "_createOperationExpression",
+        value: function _createOperationExpression(type, value) {
+            var propertyAccessExpression = new _OperationExpression2.default("propertyAccess");
+            propertyAccessExpression.children.push(new _ValueExpression2.default("type", this.type), new _ValueExpression2.default("property", this.propertyName));
+
+            var constant = this._getConstant(value);
+            var expression = new _OperationExpression2.default(type);
+            expression.children.push(propertyAccessExpression, constant);
+
+            this.currentExpression.children.push(expression);
+
+            return this.rootExpression;
+        }
+    }, {
+        key: "_getConstant",
+        value: function _getConstant(value) {
+            if (value instanceof Expression) {
+                return value;
+            }
+
+            if (typeof value === "string") {
+                return new _ValueExpression2.default("string", value);
+            } else if (typeof value === "function") {
+                return new _ValueExpression2.default("function", value);
+            } else if (typeof value === "number") {
+                return new _ValueExpression2.default("number", value);
+            } else if (typeof value === "boolean") {
+                return new _ValueExpression2.default("boolean", value);
+            } else if (value === null) {
+                return new _ValueExpression2.default("null", value);
+            } else if (Array.isArray(value)) {
+                return new _ValueExpression2.default("array", value);
+            } else if (value instanceof Date) {
+                return new _ValueExpression2.default("date", value);
+            } else {
+                return new _ValueExpression2.default("object", value);
+            }
+        }
+    }, {
+        key: "any",
+        value: function any(lambda) {
+            return this._createLambdaOperationExpression("any", lambda);
+        }
+    }, {
+        key: "all",
+        value: function all(lambda) {
+            return this._createLambdaOperationExpression("all", lambda);
+        }
+    }, {
+        key: "isEqualTo",
+        value: function isEqualTo(value) {
+            return this._createOperationExpression("isEqualTo", value);
+        }
+    }, {
+        key: "isNotEqualTo",
+        value: function isNotEqualTo(value) {
+            return this._createOperationExpression("isNotEqualTo", value);
+        }
+    }, {
+        key: "isIn",
+        value: function isIn(array) {
+            return this._createArrayOperationExpression("isIn", array);
+        }
+    }, {
+        key: "isNotIn",
+        value: function isNotIn(array) {
+            return this._createArrayOperationExpression("isNotIn", array);
+        }
+    }, {
+        key: "isGreaterThan",
+        value: function isGreaterThan(value) {
+            return this._createOperationExpression("isGreaterThan", value);
+        }
+    }, {
+        key: "isGreaterThanOrEqualTo",
+        value: function isGreaterThanOrEqualTo(value) {
+            return this._createOperationExpression("isGreaterThanOrEqualTo", value);
+        }
+    }, {
+        key: "isLessThanOrEqualTo",
+        value: function isLessThanOrEqualTo(value) {
+            return this._createOperationExpression("isLessThanOrEqualTo", value);
+        }
+    }, {
+        key: "isLessThan",
+        value: function isLessThan(value) {
+            return this._createOperationExpression("isLessThan", value);
+        }
+    }, {
+        key: "endsWith",
+        value: function endsWith(value) {
+            return this._createOperationExpression("endsWith", value);
+        }
+    }, {
+        key: "startsWith",
+        value: function startsWith(value) {
+            return this._createOperationExpression("startsWith", value);
+        }
+    }, {
+        key: "property",
+        value: function (_property) {
+            function property(_x) {
+                return _property.apply(this, arguments);
+            }
+
+            property.toString = function () {
+                return _property.toString();
+            };
+
+            return property;
+        }(function (value) {
+            var propertyNavigation = Expression.propertyNavigation(this.type, this.propertyName);
+            this.currentExpression.push(propertyNavigation);
+            return new PropertyNavigationExpressionBuilder(this.type, property, this.rootExpression, propertyNavigation);
+        })
+    }, {
+        key: "getExpression",
+        value: function getExpression() {
+            var propertyAccess = Expression.propertyAccess(Expression.type(this.type), this.propertyName);
+            this.currentExpression.children.push(propertyAccess);
+
+            return this.rootExpression;
+        }
+    }]);
+
+    return OperationExpressionBuilder;
+}();
+
+exports.default = OperationExpressionBuilder;
+//# sourceMappingURL=OperationExpressionBuilder.js.map
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _Expression2 = __webpack_require__(0);
+
+var _Expression3 = _interopRequireDefault(_Expression2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var ValueExpression = function (_Expression) {
+    _inherits(ValueExpression, _Expression);
+
+    function ValueExpression(nodeName, value) {
+        _classCallCheck(this, ValueExpression);
+
+        var _this = _possibleConstructorReturn(this, (ValueExpression.__proto__ || Object.getPrototypeOf(ValueExpression)).call(this));
+
+        _this.value = value;
+        _this.nodeName = nodeName;
+        return _this;
+    }
+
+    _createClass(ValueExpression, [{
+        key: "copy",
+        value: function copy() {
+            return new ValueExpression(this.nodeName, this.value);
+        }
+    }, {
+        key: "isEqualTo",
+        value: function isEqualTo(node) {
+            if (node && this.nodeName === node.nodeName && this.value === node.value) {
+                return true;
+            }
+            return false;
+        }
+    }, {
+        key: "contains",
+        value: function contains(node) {
+            return this.isEqualTo(node);
+        }
+    }]);
+
+    return ValueExpression;
+}(_Expression3.default);
+
+exports.default = ValueExpression;
+//# sourceMappingURL=ValueExpression.js.map
+
+/***/ }),
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
