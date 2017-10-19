@@ -70,7 +70,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 3);
+/******/ 	return __webpack_require__(__webpack_require__.s = 6);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -126,7 +126,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _OperationExpressionBuilder = __webpack_require__(5);
+var _OperationExpressionBuilder = __webpack_require__(4);
 
 var _OperationExpressionBuilder2 = _interopRequireDefault(_OperationExpressionBuilder);
 
@@ -215,6 +215,7 @@ var OperationExpression = function (_Expression) {
         var _this = _possibleConstructorReturn(this, (OperationExpression.__proto__ || Object.getPrototypeOf(OperationExpression)).call(this));
 
         _this.nodeName = nodeName;
+        _this.children = [];
         return _this;
     }
 
@@ -307,11 +308,8 @@ exports.default = OperationExpression;
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.ExpressionVisitor = exports.ExpressionBuilder = exports.Expression = exports.Queryable = undefined;
 
-var _Queryable = __webpack_require__(4);
-
-var _Queryable2 = _interopRequireDefault(_Queryable);
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _Expression = __webpack_require__(0);
 
@@ -321,99 +319,194 @@ var _ExpressionBuilder = __webpack_require__(1);
 
 var _ExpressionBuilder2 = _interopRequireDefault(_ExpressionBuilder);
 
-var _ExpressionVisitor = __webpack_require__(7);
+var _OperationExpression = __webpack_require__(2);
 
-var _ExpressionVisitor2 = _interopRequireDefault(_ExpressionVisitor);
+var _OperationExpression2 = _interopRequireDefault(_OperationExpression);
+
+var _OperationExpressionBuilder = __webpack_require__(4);
+
+var _OperationExpressionBuilder2 = _interopRequireDefault(_OperationExpressionBuilder);
+
+var _ValueExpression = __webpack_require__(5);
+
+var _ValueExpression2 = _interopRequireDefault(_ValueExpression);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.Queryable = _Queryable2.default;
-exports.Expression = _Expression2.default;
-exports.ExpressionBuilder = _ExpressionBuilder2.default;
-exports.ExpressionVisitor = _ExpressionVisitor2.default;
-//# sourceMappingURL=index.js.map
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _Expression = __webpack_require__(0);
-
-var _ExpressionBuilder = __webpack_require__(1);
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var assertHasProvider = function assertHasProvider(queryable) {
-    if (!queryable.provider) {
-        throw new Error("No provider found.");
-    }
-};
-
-var copyQuery = function copyQuery(query) {
-    var copy = {};
-
-    copy.where = query.where.copy();
-    copy.orderBy = query.orderBy.copy();
-    copy.include = query.include.copy();
-    copy.parameters = JSON.parse(JSON.stringify(query.parameters));
-    copy.take = query.take;
-    copy.skip = query.skip;
-
-    return copy;
-};
-
 var Queryable = function () {
-    function Queryable(type, query) {
-        _classCallCheck(this, Queryable);
+    function Queryable(type) {
+        var query = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-        query = query || {};
+        _classCallCheck(this, Queryable);
 
         this.type = type || "Object";
         this.provider = null;
-        this.query = {};
+        this.query = query;
         this.query.parameters = query && query.parameters || {};
-
-        if (query.where != null && query.where.nodeName === "where") {
-            this.query.where = query.where;
-        } else {
-            this.query.where = _Expression.Expression.where();
-        }
-
-        if (query.skip != null && query.skip.nodeName === "skip") {
-            this.query.skip = query.skip;
-        } else {
-            this.query.skip = _Expression.Expression.skip(0);
-        }
-
-        if (query.take != null && query.take.nodeName === "take") {
-            this.query.take = query.take;
-        } else {
-            this.query.take = _Expression.Expression.take(Infinity);
-        }
-
-        if (query.include != null && query.include.nodeName === "include") {
-            this.query.include = query.include;
-        } else {
-            this.query.include = _Expression.Expression.include();
-        }
-
-        if (query.orderBy != null && query.orderBy.nodeName === "orderBy") {
-            this.query.orderBy = query.orderBy;
-        } else {
-            this.query.orderBy = _Expression.Expression.orderBy();
-        }
+        this._applyQuery(query);
     }
 
     _createClass(Queryable, [{
+        key: "_applyQuery",
+        value: function _applyQuery(query) {
+            if (query.where != null && query.where.nodeName === "where") {
+                this.query.where = query.where;
+            } else {
+                this.query.where = new _OperationExpression2.default("where");
+            }
+
+            if (query.skip != null && query.skip.nodeName === "skip") {
+                this.query.skip = query.skip;
+            } else {
+                this.query.skip = new _ValueExpression2.default("skip", 0);
+            }
+
+            if (query.take != null && query.take.nodeName === "take") {
+                this.query.take = query.take;
+            } else {
+                this.query.take = new _ValueExpression2.default("take", Infinity);
+            }
+
+            if (query.include != null && query.include.nodeName === "include") {
+                this.query.include = query.include;
+            } else {
+                this.query.include = new _OperationExpression2.default("include");
+            }
+
+            if (query.orderBy != null && query.orderBy.nodeName === "orderBy") {
+                this.query.orderBy = query.orderBy;
+            } else {
+                this.query.orderBy = new _OperationExpression2.default("orderBy");
+            }
+
+            if (query.select != null && query.select.nodeName === "select") {
+                this.query.select = query.select;
+            } else {
+                this.query.select = new _OperationExpression2.default("select");
+            }
+        }
+    }, {
+        key: "_assertHasProvider",
+        value: function _assertHasProvider() {
+            if (!this.provider) {
+                throw new Error("No provider found.");
+            }
+        }
+    }, {
+        key: "_copyQuery",
+        value: function _copyQuery(query) {
+            var copy = {};
+
+            copy.where = query.where.copy();
+            copy.orderBy = query.orderBy.copy();
+            copy.include = query.include.copy();
+            copy.select = query.select.copy();
+            copy.parameters = JSON.parse(JSON.stringify(query.parameters));
+            copy.take = query.take.copy();
+            copy.skip = query.skip.copy();
+
+            return copy;
+        }
+    }, {
+        key: "_createQueryableFromLambda",
+        value: function _createQueryableFromLambda(type) {
+            var lambda = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () {};
+
+            var query = this._copyQuery(this.getQuery());
+            var whereExpression = void 0;
+
+            if (typeof lambda === "function") {
+                whereExpression = lambda(new _ExpressionBuilder2.default(this.type));
+            } else if (lambda instanceof _Expression2.default) {
+                whereExpression = lambda;
+            } else {
+                throw new Error("Invalid Argument: Expected an expression, or function.");
+            }
+
+            if (!(whereExpression instanceof _Expression2.default)) {
+                throw new Error("Invalid expression: You may be missing a return.");
+            }
+
+            if (query.where.children.length === 0) {
+                query.where = whereExpression;
+            } else {
+
+                var rightExpression = whereExpression.children[0];
+                var leftExpression = query.where.children.pop();
+                var expression = new _OperationExpression2.default(type);
+
+                expression.children.push(leftExpression, rightExpression);
+
+                query.where.children.push(expression);
+            }
+
+            return this.copy(query);
+        }
+    }, {
+        key: "_createQueryableFromNumber",
+        value: function _createQueryableFromNumber(type, value) {
+            if (typeof value !== "number") {
+                throw new Error("Invalid Argument: Expected a number.");
+            }
+
+            var query = this._copyQuery(this.getQuery());
+            query[type] = new _ValueExpression2.default(type, value);
+
+            return this.copy(query);
+        }
+    }, {
+        key: "_createQueryableFromOrderBy",
+        value: function _createQueryableFromOrderBy(type) {
+            var lambda = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () {};
+
+            var whereExpression = void 0;
+            var propertyExpression = void 0;
+            var query = this._copyQuery(this.getQuery());
+
+            if (typeof lambda === "function") {
+                whereExpression = lambda(new _ExpressionBuilder2.default(this.type)).getExpression();
+            } else if (lambda instanceof _OperationExpressionBuilder2.default) {
+                whereExpression = lambda.getExpression();
+            } else {
+                throw new Error("Invalid Argument: Expected a OperationExpressionBuilder, or a function.");
+            }
+
+            if (!(whereExpression instanceof _Expression2.default)) {
+                throw new Error("Invalid expression: You may be missing a return.");
+            }
+
+            var expression = new _OperationExpression2.default(type);
+            propertyExpression = whereExpression.children[0];
+            expression.children.push(propertyExpression);
+
+            if (!query.orderBy.contains(propertyExpression)) {
+                query.orderBy.children.push(expression);
+                return this.copy(query);
+            } else {
+                return this;
+            }
+        }
+    }, {
+        key: "and",
+        value: function and(lambda) {
+            return this._createQueryableFromLambda("and", lambda);
+        }
+    }, {
+        key: "copy",
+        value: function copy(query) {
+            var queryable = new Queryable(this.type, query || this._copyQuery(this.query));
+            queryable.provider = this.provider;
+            return queryable;
+        }
+    }, {
+        key: "countAsync",
+        value: function countAsync() {
+            this._assertHasProvider(this);
+            return this.provider.countAsync(this);
+        }
+    }, {
         key: "getExpression",
         value: function getExpression() {
             return this.query;
@@ -424,177 +517,23 @@ var Queryable = function () {
             return this.query;
         }
     }, {
-        key: "or",
-        value: function or(lambda) {
-            var rightExpression;
-            var query = copyQuery(this.getQuery());
-
-            if (typeof lambda === "function") {
-                lambda = lambda || function () {};
-                rightExpression = lambda.call(_ExpressionBuilder.ExpressionBuilder, new _ExpressionBuilder.ExpressionBuilder(this.type));
-            } else if (lambda instanceof _Expression.Expression) {
-                rightExpression = lambda;
-            } else {
-                throw new Error("Expected an expression to be supplied.");
-            }
-
-            if (query.where.children.length === 0) {
-                query.where.children.push(rightExpression);
-            } else {
-                var leftExpression = query.where.children.pop();
-                query.where.children.push(_Expression.Expression.or(leftExpression, rightExpression));
-            }
-
-            return this.copy(query);
-        }
-    }, {
-        key: "where",
-        value: function where(lambda) {
-            var rightExpression;
-            var query = copyQuery(this.getQuery());
-
-            if (typeof lambda === "function") {
-                lambda = lambda || function () {};
-                rightExpression = lambda.call(_ExpressionBuilder.ExpressionBuilder, new _ExpressionBuilder.ExpressionBuilder(this.type));
-            } else if (lambda instanceof _Expression.Expression) {
-                rightExpression = lambda;
-            } else {
-                throw new Error("Expected an expression to be supplied.");
-            }
-
-            if (query.where.children.length === 0) {
-                query.where.children.push(rightExpression);
-            } else {
-                var leftExpression = query.where.children.pop();
-                query.where.children.push(_Expression.Expression.and(leftExpression, rightExpression));
-            }
-
-            return this.copy(query);
-        }
-    }, {
-        key: "and",
-        value: function and(lambda) {
-            return this.where(lambda);
-        }
-    }, {
-        key: "take",
-        value: function take(value) {
-            if (typeof value !== "number") {
-                throw new Error("Illegal Argument Exception: value needs to be a number.");
-            }
-
-            var query = copyQuery(this.getQuery());
-            query.take = _Expression.Expression.take(value);
-
-            return this.copy(query);
-        }
-    }, {
-        key: "skip",
-        value: function skip(value) {
-            if (typeof value !== "number") {
-                throw new Error("Illegal Argument Exception: value needs to be a number.");
-            }
-
-            var query = copyQuery(this.getQuery());
-            query.skip = _Expression.Expression.skip(value);
-
-            return this.copy(query);
-        }
-    }, {
-        key: "orderByDesc",
-        value: function orderByDesc(lambda) {
-            var propertyExpression;
-            var query = copyQuery(this.getQuery());
-
-            if (typeof lambda === "function") {
-                lambda = lambda || function () {};
-                propertyExpression = lambda.call(_ExpressionBuilder.ExpressionBuilder, new _ExpressionBuilder.ExpressionBuilder(this.type)).getExpression();
-            } else if (lambda instanceof _ExpressionBuilder.OperationExpressionBuilder) {
-                propertyExpression = lambda.getExpression();
-            } else {
-                throw new Error("Expected a property to orderByDesc.");
-            }
-
-            var descendingExpression = _Expression.Expression.descending(propertyExpression);
-
-            if (!query.orderBy.contains(propertyExpression)) {
-                query.orderBy.children.push(descendingExpression);
-                return this.copy(query);
-            } else {
-                return this;
-            }
-        }
-    }, {
-        key: "orderBy",
-        value: function orderBy(lambda) {
-            var propertyExpression;
-            var query = copyQuery(this.getQuery());
-
-            if (typeof lambda === "function") {
-                lambda = lambda || function () {};
-                propertyExpression = lambda.call(_ExpressionBuilder.ExpressionBuilder, new _ExpressionBuilder.ExpressionBuilder(this.type)).getExpression();
-            } else if (lambda instanceof _ExpressionBuilder.OperationExpressionBuilder) {
-                propertyExpression = lambda.getExpression();
-            } else {
-                throw new Error("Expected a property to orderBy.");
-            }
-
-            var ascendingExpression = _Expression.Expression.ascending(propertyExpression);
-
-            if (!query.orderBy.contains(propertyExpression)) {
-                query.orderBy.children.push(ascendingExpression);
-                return this.copy(query);
-            } else {
-                return this;
-            }
-        }
-    }, {
-        key: "setParameters",
-        value: function setParameters(params) {
-            if (!params) {
-                throw new Error("Expected parameters to be passed in.");
-            }
-            var parameters = this.query.parameters;
-
-            Object.keys(params).forEach(function (key) {
-                parameters[key] = params[key];
-            });
-            return this;
-        }
-    }, {
-        key: "withParameters",
-        value: function withParameters(params) {
-            if (!params) {
-                throw new Error("Expected parameters to be passed in.");
-            }
-
-            var parameters = this.query.parameters = {};
-            Object.keys(params).forEach(function (key) {
-                parameters[key] = params[key];
-            });
-            return this;
-        }
-    }, {
         key: "include",
-        value: function include(lambda) {
-            var propertyExpression;
-            var query = copyQuery(this.getQuery());
+        value: function include(propertyName) {
+            if (typeof propertyName !== "string") {
+                throw new Error("Illegal Argument: Expected a string.");
+            }
 
-            if (typeof lambda === "function") {
-                lambda = lambda || function () {};
-                propertyExpression = lambda.call(_ExpressionBuilder.ExpressionBuilder, new _ExpressionBuilder.ExpressionBuilder(this.type)).getExpression();
-            } else if (lambda instanceof _ExpressionBuilder.OperationExpressionBuilder) {
-                propertyExpression = lambda.getExpression();
+            var query = this._copyQuery(this.getQuery());
+            var propertyAccess = new _OperationExpression2.default("propertyAccess");
+
+            propertyAccess.children.push(new _ValueExpression2.default("type", "Object"), new _ValueExpression2.default("property", propertyName));
+
+            if (!query.include.contains(propertyAccess)) {
+                query.include.children.push(propertyAccess);
+                return this.copy(query);
             } else {
-                throw new Error("Expected a property to include.");
+                return this;
             }
-
-            if (propertyExpression.nodeName !== "queryable") {
-                propertyExpression = _Expression.Expression.queryable(propertyExpression, _Expression.Expression.expression(_Expression.Expression.where()));
-            }
-
-            query.include.children.push(propertyExpression);
-            return this.copy(query);
         }
     }, {
         key: "merge",
@@ -616,7 +555,11 @@ var Queryable = function () {
                     cloneQuery.where.children[0].children.push(rightExpression.copy());
                 } else {
                     var leftExpression = cloneQuery.where.children.pop();
-                    cloneQuery.where.children.push(_Expression.Expression.and(leftExpression, rightExpression.copy()));
+                    var andExpression = new _OperationExpression2.default("and");
+
+                    andExpression.children.push(leftExpression, rightExpression.copy());
+
+                    cloneQuery.where.children.push(andExpression);
                 }
             }
 
@@ -633,24 +576,6 @@ var Queryable = function () {
             return this.copy(cloneQuery);
         }
     }, {
-        key: "toArrayAsync",
-        value: function toArrayAsync() {
-            assertHasProvider(this);
-            return this.provider.toArrayAsync(this);
-        }
-    }, {
-        key: "countAsync",
-        value: function countAsync() {
-            assertHasProvider(this);
-            return this.provider.countAsync(this);
-        }
-    }, {
-        key: "toArrayWithCountAsync",
-        value: function toArrayWithCountAsync() {
-            assertHasProvider(this);
-            return this.provider.toArrayWithCountAsync(this);
-        }
-    }, {
         key: "ofType",
         value: function ofType(type) {
             var queryable = new Queryable(type);
@@ -658,11 +583,104 @@ var Queryable = function () {
             return queryable;
         }
     }, {
-        key: "copy",
-        value: function copy(query) {
-            var queryable = new Queryable(this.type, query || copyQuery(this.query));
-            queryable.provider = this.provider;
-            return queryable;
+        key: "or",
+        value: function or(lambda) {
+            return this._createQueryableFromLambda("or", lambda);
+        }
+    }, {
+        key: "orderBy",
+        value: function orderBy(lambda) {
+            return this._createQueryableFromOrderBy("ascending", lambda);
+        }
+    }, {
+        key: "orderBy",
+        value: function orderBy(lambda) {
+            return this._createQueryableFromOrderBy("ascending", lambda);
+        }
+    }, {
+        key: "orderByDesc",
+        value: function orderByDesc(lambda) {
+            return this._createQueryableFromOrderBy("descending", lambda);
+        }
+    }, {
+        key: "take",
+        value: function take(value) {
+            return this._createQueryableFromNumber("take", value);
+        }
+    }, {
+        key: "toArrayAsync",
+        value: function toArrayAsync() {
+            this._assertHasProvider(this);
+            return this.provider.toArrayAsync(this);
+        }
+    }, {
+        key: "toArrayWithCountAsync",
+        value: function toArrayWithCountAsync() {
+            this._assertHasProvider(this);
+            return this.provider.toArrayWithCountAsync(this);
+        }
+    }, {
+        key: "setParameters",
+        value: function setParameters(params) {
+            if (params == null) {
+                throw new Error("Null Argument Exception.");
+            }
+            var parameters = this.query.parameters;
+
+            Object.keys(params).forEach(function (key) {
+                parameters[key] = params[key];
+            });
+            return this;
+        }
+    }, {
+        key: "select",
+        value: function select(properties) {
+            var _this = this;
+
+            if (!Array.isArray(properties)) {
+                throw new Error("Illegal Argument: Expected an array of strings.");
+            }
+
+            var query = this._copyQuery(this.getQuery());
+
+            properties.forEach(function (propertyName) {
+                if (typeof propertyName !== "string") {
+                    throw new Error("Illegal Argument: Expected a string.");
+                }
+
+                var propertyAccess = new _OperationExpression2.default("propertyAccess");
+
+                propertyAccess.children.push(new _ValueExpression2.default("type", _this.type), new _ValueExpression2.default("property", propertyName));
+
+                if (!query.select.contains(propertyAccess)) {
+                    query.select.children.push(propertyAccess);
+                }
+            });
+
+            return this.copy(query);
+        }
+    }, {
+        key: "skip",
+        value: function skip(value) {
+            return this._createQueryableFromNumber("skip", value);
+        }
+    }, {
+        key: "where",
+        value: function where(lambda) {
+            return this._createQueryableFromLambda("and", lambda);
+        }
+    }, {
+        key: "withParameters",
+        value: function withParameters(params) {
+            if (params == null) {
+                throw new Error("Null ArgumentException");
+            }
+
+            var parameters = this.query.parameters = {};
+            Object.keys(params).forEach(function (key) {
+                parameters[key] = params[key];
+            });
+            return this;
         }
     }]);
 
@@ -673,7 +691,7 @@ exports.default = Queryable;
 //# sourceMappingURL=Queryable.js.map
 
 /***/ }),
-/* 5 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -685,13 +703,25 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _ValueExpression = __webpack_require__(6);
+var _ValueExpression = __webpack_require__(5);
 
 var _ValueExpression2 = _interopRequireDefault(_ValueExpression);
 
 var _OperationExpression = __webpack_require__(2);
 
 var _OperationExpression2 = _interopRequireDefault(_OperationExpression);
+
+var _Expression = __webpack_require__(0);
+
+var _Expression2 = _interopRequireDefault(_Expression);
+
+var _ExpressionBuilder = __webpack_require__(1);
+
+var _ExpressionBuilder2 = _interopRequireDefault(_ExpressionBuilder);
+
+var _Queryable = __webpack_require__(3);
+
+var _Queryable2 = _interopRequireDefault(_Queryable);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -705,23 +735,38 @@ var OperationExpressionBuilder = function () {
         this.propertyName = property;
         this.rootExpression = rootExpression;
         this.currentExpression = currentExpression || rootExpression;
+
+        if (type == null) {
+            throw new Error("Null Argument Exception: type cannot be null.");
+        }
+
+        if (rootExpression == null) {
+            throw new Error("Null Argement Exception: rootExpression cannot be null.");
+        }
     }
 
     _createClass(OperationExpressionBuilder, [{
-        key: "_createArrayOperationExpression",
-        value: function _createArrayOperationExpression(type, array) {
-            var propertyAccessExpression = new _OperationExpression2.default("propertyAccess");
-            propertyAccessExpression.children.push(new _ValueExpression2.default("type", this.type), new _ValueExpression2.default("property", this.propertyName));
+        key: "_createResultsOperationExpression",
+        value: function _createResultsOperationExpression(type, results) {
+            var propertyAccessExpression = this._createPropertyAccessExpression();
 
-            if (Array.isArray(array)) {
-                var constant = this._getConstant(array);
-                var arrayExpression = new _OperationExpression2.default(type);
-                arrayExpression.children.push(propertyAccessExpression, constant);
+            if (Array.isArray(results)) {
+                var constant = this._getConstant(results);
+                var operationExpression = new _OperationExpression2.default(type);
+                operationExpression.children.push(propertyAccessExpression, constant);
 
-                this.currentExpression.children.push(arrayExpression);
+                this.currentExpression.children.push(operationExpression);
+                return this.rootExpression;
+            } else if (results instanceof _Queryable2.default) {
+                var _operationExpression = new _OperationExpression2.default(type);
+                var queryableExpression = new _ValueExpression2.default("queryable", results);
+
+                _operationExpression.children.push(propertyAccessExpression, queryableExpression);
+
+                this.currentExpression.children.push(_operationExpression);
                 return this.rootExpression;
             } else {
-                throw new Error("Invalid Argument: Expected an array.");
+                throw new Error("Invalid Argument: Expected an array or a queryable.");
             }
         }
     }, {
@@ -731,14 +776,16 @@ var OperationExpressionBuilder = function () {
                 throw new Error("Invalid Argument: Expected a function.");
             }
 
-            var propertyAccessExpression = new _OperationExpression2.default("propertyAccess");
-            propertyAccessExpression.children.push(new _ValueExpression2.default("type", this.type), new _ValueExpression2.default("property", this.propertyName));
+            var propertyNavigationExpression = this._createPropertyNavigationExpression();
 
-            var expressionBuilder = new ExpressionBuilder();
+            var expressionBuilder = new _ExpressionBuilder2.default();
             var expression = lambda(expressionBuilder);
+            var expressionExpression = new _OperationExpression2.default("expression");
+
+            expressionExpression.children.push(expression);
 
             var lambdaExpression = new _OperationExpression2.default(type);
-            lambdaExpression.children.push(propertyAccessExpression, expression);
+            lambdaExpression.children.push(propertyNavigationExpression, expressionExpression);
 
             this.currentExpression.children.push(lambdaExpression);
 
@@ -747,8 +794,7 @@ var OperationExpressionBuilder = function () {
     }, {
         key: "_createOperationExpression",
         value: function _createOperationExpression(type, value) {
-            var propertyAccessExpression = new _OperationExpression2.default("propertyAccess");
-            propertyAccessExpression.children.push(new _ValueExpression2.default("type", this.type), new _ValueExpression2.default("property", this.propertyName));
+            var propertyAccessExpression = this._createPropertyAccessExpression();
 
             var constant = this._getConstant(value);
             var expression = new _OperationExpression2.default(type);
@@ -759,9 +805,25 @@ var OperationExpressionBuilder = function () {
             return this.rootExpression;
         }
     }, {
+        key: "_createPropertyAccessExpression",
+        value: function _createPropertyAccessExpression() {
+            var propertyAccessExpression = new _OperationExpression2.default("propertyAccess");
+            propertyAccessExpression.children.push(new _ValueExpression2.default("type", this.type), new _ValueExpression2.default("property", this.propertyName));
+
+            return propertyAccessExpression;
+        }
+    }, {
+        key: "_createPropertyNavigationExpression",
+        value: function _createPropertyNavigationExpression() {
+            var propertyNavigationExpression = new _OperationExpression2.default("propertyNavigation");
+            propertyNavigationExpression.children.push(new _ValueExpression2.default("type", this.type), new _ValueExpression2.default("property", this.propertyName));
+
+            return propertyNavigationExpression;
+        }
+    }, {
         key: "_getConstant",
         value: function _getConstant(value) {
-            if (value instanceof Expression) {
+            if (value instanceof _Expression2.default) {
                 return value;
             }
 
@@ -794,6 +856,11 @@ var OperationExpressionBuilder = function () {
             return this._createLambdaOperationExpression("all", lambda);
         }
     }, {
+        key: "contains",
+        value: function contains(value) {
+            return this._createOperationExpression("contains", value);
+        }
+    }, {
         key: "isEqualTo",
         value: function isEqualTo(value) {
             return this._createOperationExpression("isEqualTo", value);
@@ -806,12 +873,12 @@ var OperationExpressionBuilder = function () {
     }, {
         key: "isIn",
         value: function isIn(array) {
-            return this._createArrayOperationExpression("isIn", array);
+            return this._createResultsOperationExpression("isIn", array);
         }
     }, {
         key: "isNotIn",
         value: function isNotIn(array) {
-            return this._createArrayOperationExpression("isNotIn", array);
+            return this._createResultsOperationExpression("isNotIn", array);
         }
     }, {
         key: "isGreaterThan",
@@ -845,26 +912,16 @@ var OperationExpressionBuilder = function () {
         }
     }, {
         key: "property",
-        value: function (_property) {
-            function property(_x) {
-                return _property.apply(this, arguments);
-            }
-
-            property.toString = function () {
-                return _property.toString();
-            };
-
-            return property;
-        }(function (value) {
-            var propertyNavigation = Expression.propertyNavigation(this.type, this.propertyName);
-            this.currentExpression.push(propertyNavigation);
-            return new PropertyNavigationExpressionBuilder(this.type, property, this.rootExpression, propertyNavigation);
-        })
+        value: function property(value) {
+            var propertyNavigation = this._createPropertyNavigationExpression();
+            this.currentExpression.children.push(propertyNavigation);
+            return new OperationExpressionBuilder("Object", value, this.rootExpression, propertyNavigation);
+        }
     }, {
         key: "getExpression",
         value: function getExpression() {
-            var propertyAccess = Expression.propertyAccess(Expression.type(this.type), this.propertyName);
-            this.currentExpression.children.push(propertyAccess);
+            var propertyAccessExpression = this._createPropertyAccessExpression();
+            this.currentExpression.children.push(propertyAccessExpression);
 
             return this.rootExpression;
         }
@@ -877,7 +934,7 @@ exports.default = OperationExpressionBuilder;
 //# sourceMappingURL=OperationExpressionBuilder.js.map
 
 /***/ }),
-/* 6 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -939,6 +996,42 @@ var ValueExpression = function (_Expression) {
 
 exports.default = ValueExpression;
 //# sourceMappingURL=ValueExpression.js.map
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.ExpressionVisitor = exports.ExpressionBuilder = exports.Expression = exports.Queryable = undefined;
+
+var _Queryable = __webpack_require__(3);
+
+var _Queryable2 = _interopRequireDefault(_Queryable);
+
+var _Expression = __webpack_require__(0);
+
+var _Expression2 = _interopRequireDefault(_Expression);
+
+var _ExpressionBuilder = __webpack_require__(1);
+
+var _ExpressionBuilder2 = _interopRequireDefault(_ExpressionBuilder);
+
+var _ExpressionVisitor = __webpack_require__(7);
+
+var _ExpressionVisitor2 = _interopRequireDefault(_ExpressionVisitor);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.Queryable = _Queryable2.default;
+exports.Expression = _Expression2.default;
+exports.ExpressionBuilder = _ExpressionBuilder2.default;
+exports.ExpressionVisitor = _ExpressionVisitor2.default;
+//# sourceMappingURL=index.js.map
 
 /***/ }),
 /* 7 */
