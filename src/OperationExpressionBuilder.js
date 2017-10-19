@@ -2,6 +2,7 @@ import ValueExpression from "./ValueExpression";
 import OperationExpression from "./OperationExpression";
 import Expression from "./Expression";
 import ExpressionBuilder from "./ExpressionBuilder";
+import Queryable from "./Queryable";
 
 export default class OperationExpressionBuilder {
     constructor(type, property, rootExpression, currentExpression) {
@@ -19,18 +20,26 @@ export default class OperationExpressionBuilder {
         }
     }
 
-    _createArrayOperationExpression(type, array) {
+    _createResultsOperationExpression(type, results) {
         let propertyAccessExpression = this._createPropertyAccessExpression();
 
-        if (Array.isArray(array)) {
-            let constant = this._getConstant(array);
-            let arrayExpression = new OperationExpression(type);
-            arrayExpression.children.push(propertyAccessExpression, constant);
+        if (Array.isArray(results)) {
+            let constant = this._getConstant(results);
+            let operationExpression = new OperationExpression(type);
+            operationExpression.children.push(propertyAccessExpression, constant);
 
-            this.currentExpression.children.push(arrayExpression);
+            this.currentExpression.children.push(operationExpression);
+            return this.rootExpression;
+        } else if (results instanceof Queryable) {
+            let operationExpression = new OperationExpression(type);
+            let queryableExpression = new ValueExpression("queryable", results);
+
+            operationExpression.children.push(propertyAccessExpression, queryableExpression);
+
+            this.currentExpression.children.push(operationExpression);
             return this.rootExpression;
         } else {
-            throw new Error("Invalid Argument: Expected an array.");
+            throw new Error("Invalid Argument: Expected an array or a queryable.");
         }
     }
 
@@ -135,11 +144,11 @@ export default class OperationExpressionBuilder {
     }
 
     isIn(array) {
-        return this._createArrayOperationExpression("isIn", array);
+        return this._createResultsOperationExpression("isIn", array);
     }
 
     isNotIn(array) {
-        return this._createArrayOperationExpression("isNotIn", array);
+        return this._createResultsOperationExpression("isNotIn", array);
     }
 
     isGreaterThan(value) {
