@@ -537,3 +537,30 @@ exports["Queryable: Constructor with copy called."] = function () {
 
     assert.deepEqual(queryable, copiedQueryable);
 };
+
+exports["Queryable: IsIn with queryable."] = function () {
+    let posts = new Queryable("Post");
+    let members = new Queryable("Member").select(["groupId"]).where((expBuilder) => {
+        return expBuilder.property("userId").isEqualTo("Bob");
+    });
+
+    posts = posts.where((expBuilder) => {
+        return expBuilder.property("groupId").isIn(members);
+    });
+
+    assert.equal(posts.query.where.children[0].children[1].value, members);
+};
+
+exports["Queryable: Select, invalid arguments."] = function () {
+    let queryable = new Queryable();
+    assert.throws(() => {
+        queryable.select("bad");
+    });
+};
+
+exports["Queryable: Select."] = function () {
+    let queryable = new Queryable().select(["one", "two"]);
+
+    assert.equal(queryable.query.select.children[0].children[1].value, "one");
+    assert.equal(queryable.query.select.children[1].children[1].value, "two");
+};

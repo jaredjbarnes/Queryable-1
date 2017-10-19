@@ -43,6 +43,13 @@ export default class Queryable {
         } else {
             this.query.orderBy = new OperationExpression("orderBy");
         }
+
+        if (query.select != null && query.select.nodeName === "select") {
+            this.query.select = query.select;
+        } else {
+            this.query.select = new OperationExpression("select");
+        }
+
     }
 
     _assertHasProvider() {
@@ -57,6 +64,7 @@ export default class Queryable {
         copy.where = query.where.copy();
         copy.orderBy = query.orderBy.copy();
         copy.include = query.include.copy();
+        copy.select = query.select.copy();
         copy.parameters = JSON.parse(JSON.stringify(query.parameters));
         copy.take = query.take.copy();
         copy.skip = query.skip.copy();
@@ -271,6 +279,34 @@ export default class Queryable {
             parameters[key] = params[key];
         });
         return this;
+    }
+
+    select(properties) {
+        if (!Array.isArray(properties)) {
+            throw new Error("Illegal Argument: Expected an array of strings.");
+        }
+
+        let query = this._copyQuery(this.getQuery());
+
+        properties.forEach((propertyName) => {
+            if (typeof propertyName !== "string") {
+                throw new Error("Illegal Argument: Expected a string.");
+            }
+
+            let propertyAccess = new OperationExpression("propertyAccess");
+
+            propertyAccess.children.push(
+                new ValueExpression("type", this.type),
+                new ValueExpression("property", propertyName)
+            );
+
+            if (!query.select.contains(propertyAccess)) {
+                query.select.children.push(propertyAccess);
+            }
+        });
+
+        return this.copy(query);
+
     }
 
     skip(value) {
