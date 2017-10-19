@@ -1048,6 +1048,10 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _Expression = __webpack_require__(0);
 
+var _Expression2 = _interopRequireDefault(_Expression);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var ExpressionVisitor = function () {
@@ -1081,7 +1085,7 @@ var ExpressionVisitor = function () {
             }
 
             children.forEach(function (child, index) {
-                if (child instanceof _Expression.Expression) {
+                if (child instanceof _Expression2.default) {
                     var func = _this[child.nodeName];
                     if (!func) {
                         throw new Error("The builder doesn't support the \"" + child.nodeName + "\" expression.");
