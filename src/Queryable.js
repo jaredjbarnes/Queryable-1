@@ -47,7 +47,7 @@ export default class Queryable {
         if (query.select != null && query.select.nodeName === "select") {
             this.query.select = query.select;
         } else {
-            this.query.select = new OperationExpression("select");
+            this.query.select = new ValueExpression("select", {});
         }
 
     }
@@ -147,6 +147,49 @@ export default class Queryable {
         }
     }
 
+    _validatePropertyName(name) {
+        return typeof name === "string" && name.length > 0 && isNaN(parseInt(name.charAt(0), 10))
+    }
+
+    _selectArray(properties) {
+        let hasValidMapping = properties.every((property) => {
+            return this._validatePropertyName(property);
+        });
+
+        if (!hasValidMapping) {
+            throw new Error("Invalid mapping: The mappings need to be a string that is at least one character long and doesn't start with a number.");
+        }
+
+        let query = this._copyQuery(this.getQuery());
+        let existingMapping = query.select.value;
+
+        properties.forEach((property) => {
+            existingMapping[property] = property;
+        });
+
+        return this.copy(query);
+    }
+
+    _selectObject(mapping) {
+        let mappingKeys = Object.keys(mapping);
+        let hasValidMapping = mappingKeys.every((key) => {
+            return this._validatePropertyName(key) && this._validatePropertyName(mapping[key]);
+        });
+
+        if (!hasValidMapping) {
+            throw new Error("Invalid mapping: The mappings need to be a string that is at least one character long and doesn't start with a number.");
+        }
+
+        let query = this._copyQuery(this.getQuery());
+        let existingMapping = query.select.value;
+
+        mappingKeys.forEach((key) => {
+            existingMapping[key] = mapping[key];
+        });
+
+        return this.copy(query);
+    }
+
     and(lambda) {
         return this._createQueryableFromLambda("and", lambda);
     }
@@ -168,27 +211,6 @@ export default class Queryable {
 
     getQuery() {
         return this.query;
-    }
-
-    include(propertyName) {
-        if (typeof propertyName !== "string") {
-            throw new Error("Illegal Argument: Expected a string.");
-        }
-
-        let query = this._copyQuery(this.getQuery());
-        let propertyAccess = new OperationExpression("propertyAccess");
-
-        propertyAccess.children.push(
-            new ValueExpression("type", "Object"),
-            new ValueExpression("property", propertyName)
-        );
-
-        if (!query.include.contains(propertyAccess)) {
-            query.include.children.push(propertyAccess);
-            return this.copy(query);
-        } else {
-            return this;
-        }
     }
 
     merge(queryable) {
@@ -281,32 +303,12 @@ export default class Queryable {
         return this;
     }
 
-    select(properties) {
-        if (!Array.isArray(properties)) {
-            throw new Error("Illegal Argument: Expected an array of strings.");
+    select(mapping) {
+        if (Array.isArray(mapping)) {
+            return this._selectArray(mapping)
+        } else {
+            return this._selectObject(mapping);
         }
-
-        let query = this._copyQuery(this.getQuery());
-
-        properties.forEach((propertyName) => {
-            if (typeof propertyName !== "string") {
-                throw new Error("Illegal Argument: Expected a string.");
-            }
-
-            let propertyAccess = new OperationExpression("propertyAccess");
-
-            propertyAccess.children.push(
-                new ValueExpression("type", this.type),
-                new ValueExpression("property", propertyName)
-            );
-
-            if (!query.select.contains(propertyAccess)) {
-                query.select.children.push(propertyAccess);
-            }
-        });
-
-        return this.copy(query);
-
     }
 
     skip(value) {

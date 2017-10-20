@@ -8,7 +8,13 @@ export default class ValueExpression extends Expression {
     }
 
     copy() {
-        return new ValueExpression(this.nodeName, this.value);
+        let value = this.value;
+
+        if (typeof value === "object" && value != null) {
+            value = JSON.parse(JSON.stringify(value));
+        }
+
+        return new ValueExpression(this.nodeName, value);
     }
 
     isEqualTo(node) {

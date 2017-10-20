@@ -5,7 +5,7 @@ export default class ExpressionVisitor {
     parse(expression) {
         let children = [];
 
-        if (!expression) {
+        if (expression == null) {
             return null;
         }
 

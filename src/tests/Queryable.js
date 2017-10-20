@@ -127,38 +127,6 @@ exports["Queryable: Constructor with query (orderBy: w/o lambda or ExpressionBui
     });
 };
 
-exports["Queryable: Constructor with query (include: single)"] = function () {
-    let queryable = new Queryable();
-    queryable = queryable.include("property");
-
-    const query = queryable.getQuery();
-
-    assert.equal("propertyAccess", query.include.children[0].nodeName);
-    assert.equal("property", query.include.children[0].children[1].value);
-};
-
-exports["Queryable: Constructor with query (include: chain)"] = function () {
-    let queryable = new Queryable();
-    queryable = queryable
-        .include("propertyOne")
-        .include("propertyTwo");
-
-    const query = queryable.getQuery();
-
-    assert.equal("propertyAccess", query.include.children[0].nodeName);
-    assert.equal("propertyOne", query.include.children[0].children[1].value);
-    assert.equal("propertyAccess", query.include.children[1].nodeName);
-    assert.equal("propertyTwo", query.include.children[1].children[1].value);
-};
-
-exports["Queryable: Constructor with query (include: w/o lambda or ExpressionBuilder instance)"] = function () {
-    let queryable = new Queryable();
-
-    assert.throws(() => {
-        queryable = queryable.include();
-    });
-};
-
 exports["Queryable: Constructor with query (take: value === number)"] = function () {
     let queryable = new Queryable();
     queryable = queryable.take(10);
@@ -430,18 +398,6 @@ exports["Queryable: Constructor with query (merge: queryable merging has a chain
     assert.equal("Jared", query.where.children[0].children[2].children[1].value);
 };
 
-exports["Queryable: Constructor with query (merge: merging queryable has an include expression)"] = function () {
-    let queryable1 = new Queryable();
-    let queryable2 = new Queryable();
-
-    queryable1 = queryable1.include("property");
-    queryable2 = queryable2.merge(queryable1);
-
-    const query = queryable2.getQuery();
-
-    assert.equal("property", query.include.children[0].children[1].value);
-};
-
 exports["Queryable: Constructor with query (merge: merging queryable has an orderBy expression)"] = function () {
     let queryable1 = new Queryable();
     let queryable2 = new Queryable();
@@ -559,8 +515,11 @@ exports["Queryable: Select, invalid arguments."] = function () {
 };
 
 exports["Queryable: Select."] = function () {
-    let queryable = new Queryable().select(["one", "two"]);
+    let queryable = new Queryable().select({
+        "one": "otherOne",
+        "two": "otherTwo"
+    });
 
-    assert.equal(queryable.query.select.children[0].children[1].value, "one");
-    assert.equal(queryable.query.select.children[1].children[1].value, "two");
+    assert.equal(queryable.query.select.value.one, "otherOne");
+    assert.equal(queryable.query.select.value.two, "otherTwo");
 };
