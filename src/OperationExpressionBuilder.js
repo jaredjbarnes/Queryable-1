@@ -123,14 +123,6 @@ export default class OperationExpressionBuilder {
         }
     }
 
-    any(lambda) {
-        return this._createLambdaOperationExpression("any", lambda);
-    }
-
-    all(lambda) {
-        return this._createLambdaOperationExpression("all", lambda);
-    }
-
     contains(value) {
         return this._createOperationExpression("contains", value);
     }

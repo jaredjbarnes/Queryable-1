@@ -32,12 +32,6 @@ export default class Queryable {
             this.query.take = new ValueExpression("take", Infinity);
         }
 
-        if (query.include != null && query.include.nodeName === "include") {
-            this.query.include = query.include;
-        } else {
-            this.query.include = new OperationExpression("include");
-        }
-
         if (query.orderBy != null && query.orderBy.nodeName === "orderBy") {
             this.query.orderBy = query.orderBy;
         } else {
@@ -63,11 +57,11 @@ export default class Queryable {
 
         copy.where = query.where.copy();
         copy.orderBy = query.orderBy.copy();
-        copy.include = query.include.copy();
         copy.select = query.select.copy();
-        copy.parameters = JSON.parse(JSON.stringify(query.parameters));
         copy.take = query.take.copy();
         copy.skip = query.skip.copy();
+
+        copy.parameters = JSON.parse(JSON.stringify(query.parameters));
 
         return copy;
     }
@@ -218,9 +212,9 @@ export default class Queryable {
             throw new Error("Expected a queryable to be passed in.");
         }
 
-        let clone = this.copy();
-        let cloneQuery = clone.getQuery();
+        let cloneQuery = this._copyQuery(this.getQuery());
         let query = queryable.getQuery();
+
         let rightExpression = query.where.children[0];
 
         if (rightExpression != null) {
@@ -242,8 +236,8 @@ export default class Queryable {
             }
         }
 
-        query.include.children.forEach(function (expression) {
-            cloneQuery.include.children.push(expression.copy());
+        Object.keys(query.select.value).forEach((key) => {
+            cloneQuery.select.value[key] = query.select.value[key];
         });
 
         query.orderBy.children.forEach(function (expression) {
@@ -253,12 +247,6 @@ export default class Queryable {
         });
 
         return this.copy(cloneQuery);
-    }
-
-    ofType(type) {
-        let queryable = new Queryable(type);
-        queryable.provider = this.provider;
-        return queryable;
     }
 
     or(lambda) {

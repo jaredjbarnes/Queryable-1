@@ -369,12 +369,6 @@ var Queryable = function () {
                 this.query.take = new _ValueExpression2.default("take", Infinity);
             }
 
-            if (query.include != null && query.include.nodeName === "include") {
-                this.query.include = query.include;
-            } else {
-                this.query.include = new _OperationExpression2.default("include");
-            }
-
             if (query.orderBy != null && query.orderBy.nodeName === "orderBy") {
                 this.query.orderBy = query.orderBy;
             } else {
@@ -384,7 +378,7 @@ var Queryable = function () {
             if (query.select != null && query.select.nodeName === "select") {
                 this.query.select = query.select;
             } else {
-                this.query.select = new _OperationExpression2.default("select");
+                this.query.select = new _ValueExpression2.default("select", {});
             }
         }
     }, {
@@ -401,11 +395,11 @@ var Queryable = function () {
 
             copy.where = query.where.copy();
             copy.orderBy = query.orderBy.copy();
-            copy.include = query.include.copy();
             copy.select = query.select.copy();
-            copy.parameters = JSON.parse(JSON.stringify(query.parameters));
             copy.take = query.take.copy();
             copy.skip = query.skip.copy();
+
+            copy.parameters = JSON.parse(JSON.stringify(query.parameters));
 
             return copy;
         }
@@ -489,6 +483,56 @@ var Queryable = function () {
             }
         }
     }, {
+        key: "_validatePropertyName",
+        value: function _validatePropertyName(name) {
+            return typeof name === "string" && name.length > 0 && isNaN(parseInt(name.charAt(0), 10));
+        }
+    }, {
+        key: "_selectArray",
+        value: function _selectArray(properties) {
+            var _this = this;
+
+            var hasValidMapping = properties.every(function (property) {
+                return _this._validatePropertyName(property);
+            });
+
+            if (!hasValidMapping) {
+                throw new Error("Invalid mapping: The mappings need to be a string that is at least one character long and doesn't start with a number.");
+            }
+
+            var query = this._copyQuery(this.getQuery());
+            var existingMapping = query.select.value;
+
+            properties.forEach(function (property) {
+                existingMapping[property] = property;
+            });
+
+            return this.copy(query);
+        }
+    }, {
+        key: "_selectObject",
+        value: function _selectObject(mapping) {
+            var _this2 = this;
+
+            var mappingKeys = Object.keys(mapping);
+            var hasValidMapping = mappingKeys.every(function (key) {
+                return _this2._validatePropertyName(key) && _this2._validatePropertyName(mapping[key]);
+            });
+
+            if (!hasValidMapping) {
+                throw new Error("Invalid mapping: The mappings need to be a string that is at least one character long and doesn't start with a number.");
+            }
+
+            var query = this._copyQuery(this.getQuery());
+            var existingMapping = query.select.value;
+
+            mappingKeys.forEach(function (key) {
+                existingMapping[key] = mapping[key];
+            });
+
+            return this.copy(query);
+        }
+    }, {
         key: "and",
         value: function and(lambda) {
             return this._createQueryableFromLambda("and", lambda);
@@ -517,34 +561,15 @@ var Queryable = function () {
             return this.query;
         }
     }, {
-        key: "include",
-        value: function include(propertyName) {
-            if (typeof propertyName !== "string") {
-                throw new Error("Illegal Argument: Expected a string.");
-            }
-
-            var query = this._copyQuery(this.getQuery());
-            var propertyAccess = new _OperationExpression2.default("propertyAccess");
-
-            propertyAccess.children.push(new _ValueExpression2.default("type", "Object"), new _ValueExpression2.default("property", propertyName));
-
-            if (!query.include.contains(propertyAccess)) {
-                query.include.children.push(propertyAccess);
-                return this.copy(query);
-            } else {
-                return this;
-            }
-        }
-    }, {
         key: "merge",
         value: function merge(queryable) {
             if (!(queryable instanceof Queryable)) {
                 throw new Error("Expected a queryable to be passed in.");
             }
 
-            var clone = this.copy();
-            var cloneQuery = clone.getQuery();
+            var cloneQuery = this._copyQuery(this.getQuery());
             var query = queryable.getQuery();
+
             var rightExpression = query.where.children[0];
 
             if (rightExpression != null) {
@@ -563,8 +588,8 @@ var Queryable = function () {
                 }
             }
 
-            query.include.children.forEach(function (expression) {
-                cloneQuery.include.children.push(expression.copy());
+            Object.keys(query.select.value).forEach(function (key) {
+                cloneQuery.select.value[key] = query.select.value[key];
             });
 
             query.orderBy.children.forEach(function (expression) {
@@ -574,13 +599,6 @@ var Queryable = function () {
             });
 
             return this.copy(cloneQuery);
-        }
-    }, {
-        key: "ofType",
-        value: function ofType(type) {
-            var queryable = new Queryable(type);
-            queryable.provider = this.provider;
-            return queryable;
         }
     }, {
         key: "or",
@@ -634,30 +652,12 @@ var Queryable = function () {
         }
     }, {
         key: "select",
-        value: function select(properties) {
-            var _this = this;
-
-            if (!Array.isArray(properties)) {
-                throw new Error("Illegal Argument: Expected an array of strings.");
+        value: function select(mapping) {
+            if (Array.isArray(mapping)) {
+                return this._selectArray(mapping);
+            } else {
+                return this._selectObject(mapping);
             }
-
-            var query = this._copyQuery(this.getQuery());
-
-            properties.forEach(function (propertyName) {
-                if (typeof propertyName !== "string") {
-                    throw new Error("Illegal Argument: Expected a string.");
-                }
-
-                var propertyAccess = new _OperationExpression2.default("propertyAccess");
-
-                propertyAccess.children.push(new _ValueExpression2.default("type", _this.type), new _ValueExpression2.default("property", propertyName));
-
-                if (!query.select.contains(propertyAccess)) {
-                    query.select.children.push(propertyAccess);
-                }
-            });
-
-            return this.copy(query);
         }
     }, {
         key: "skip",
@@ -846,16 +846,6 @@ var OperationExpressionBuilder = function () {
             }
         }
     }, {
-        key: "any",
-        value: function any(lambda) {
-            return this._createLambdaOperationExpression("any", lambda);
-        }
-    }, {
-        key: "all",
-        value: function all(lambda) {
-            return this._createLambdaOperationExpression("all", lambda);
-        }
-    }, {
         key: "contains",
         value: function contains(value) {
             return this._createOperationExpression("contains", value);
@@ -944,6 +934,8 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _Expression2 = __webpack_require__(0);
@@ -974,7 +966,13 @@ var ValueExpression = function (_Expression) {
     _createClass(ValueExpression, [{
         key: "copy",
         value: function copy() {
-            return new ValueExpression(this.nodeName, this.value);
+            var value = this.value;
+
+            if ((typeof value === "undefined" ? "undefined" : _typeof(value)) === "object" && value != null) {
+                value = JSON.parse(JSON.stringify(value));
+            }
+
+            return new ValueExpression(this.nodeName, value);
         }
     }, {
         key: "isEqualTo",
@@ -1066,7 +1064,7 @@ var ExpressionVisitor = function () {
 
             var children = [];
 
-            if (!expression) {
+            if (expression == null) {
                 return null;
             }
 
