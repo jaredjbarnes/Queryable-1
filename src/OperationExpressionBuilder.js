@@ -32,7 +32,7 @@ export default class OperationExpressionBuilder {
             return this.rootExpression;
         } else if (results instanceof Queryable) {
             let operationExpression = new OperationExpression(type);
-            let queryableExpression = new ValueExpression("queryable", results);
+            let queryableExpression = new ValueExpression("queryable", results.getQuery());
 
             operationExpression.children.push(propertyAccessExpression, queryableExpression);
 
