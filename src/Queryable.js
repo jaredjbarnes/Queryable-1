@@ -3,6 +3,9 @@ import ExpressionBuilder from "./ExpressionBuilder";
 import OperationExpression from "./OperationExpression";
 import OperationExpressionBuilder from "./OperationExpressionBuilder";
 import ValueExpression from "./ValueExpression";
+import JsonQueryConverter from "./JsonQueryConverter";
+
+const jsonQueryConverter = new JsonQueryConverter();
 
 export default class Queryable {
     constructor(type, query = {}) {
@@ -20,28 +23,30 @@ export default class Queryable {
             this.query.where = new OperationExpression("where");
         }
 
-        if (query.skip != null && query.skip.nodeName === "skip") {
+        if (typeof query.skip === "number") {
             this.query.skip = query.skip;
         } else {
-            this.query.skip = new ValueExpression("skip", 0);
+            this.query.skip = 0;
         }
 
-        if (query.take != null && query.take.nodeName === "take") {
+        if (typeof query.take === "number") {
             this.query.take = query.take;
         } else {
-            this.query.take = new ValueExpression("take", Infinity);
+            this.query.take = Infinity;
         }
 
-        if (query.orderBy != null && query.orderBy.nodeName === "orderBy") {
-            this.query.orderBy = query.orderBy;
+        if (Array.isArray(query.orderBy)) {
+            this.query.orderBy = query.orderBy.filter((orderBy) => {
+                return this._isValidOrderBy(orderBy);
+            });
         } else {
-            this.query.orderBy = new OperationExpression("orderBy");
+            this.query.orderBy = [];
         }
 
-        if (query.select != null && query.select.nodeName === "select") {
+        if (this._isValidMapping(this.query.select)) {
             this.query.select = query.select;
         } else {
-            this.query.select = new ValueExpression("select", {});
+            this.query.select = {};
         }
 
     }
@@ -52,16 +57,19 @@ export default class Queryable {
         }
     }
 
+    _cloneObject(object) {
+        return JSON.parse(JSON.stringify(object));
+    }
+
     _copyQuery(query) {
         let copy = {};
 
         copy.where = query.where.copy();
-        copy.orderBy = query.orderBy.copy();
-        copy.select = query.select.copy();
-        copy.take = query.take.copy();
-        copy.skip = query.skip.copy();
-
-        copy.parameters = JSON.parse(JSON.stringify(query.parameters));
+        copy.orderBy = this._cloneObject(query.orderBy);
+        copy.select = this._cloneObject(query.select);
+        copy.take = query.take;
+        copy.skip = query.skip;
+        copy.parameters = this._cloneObject(query.parameters);
 
         return copy;
     }
@@ -101,44 +109,32 @@ export default class Queryable {
         return this.copy(query);
     }
 
-    _createQueryableFromNumber(type, value) {
-        if (typeof value !== "number") {
-            throw new Error("Invalid Argument: Expected a number.");
+    _isValidMapping(mapping) {
+        if (mapping == null) {
+            return false;
         }
 
-        let query = this._copyQuery(this.getQuery());
-        query[type] = new ValueExpression(type, value);
-
-        return this.copy(query);
+        return Object.keys(mapping).every((key) => {
+            return typeof key === "string" && typeof mapping[key] === "string";
+        });
     }
 
-    _createQueryableFromOrderBy(type, lambda = () => { }) {
-        let whereExpression;
-        let propertyExpression;
-        let query = this._copyQuery(this.getQuery());
+    _isValidOrderBy(orderBy) {
+        let keys = Object.keys(orderBy);
 
-        if (typeof lambda === "function") {
-            whereExpression = lambda(new ExpressionBuilder(this.type)).getExpression();
-        } else if (lambda instanceof OperationExpressionBuilder) {
-            whereExpression = lambda.getExpression();
-        } else {
-            throw new Error("Invalid Argument: Expected a OperationExpressionBuilder, or a function.");
+        if (keys.length !== 2) {
+            return false;
         }
 
-        if (!(whereExpression instanceof Expression)) {
-            throw new Error("Invalid expression: You may be missing a return.");
+        if (orderBy.type !== "ASC" && orderBy.type !== "DESC") {
+            return false;
         }
 
-        let expression = new OperationExpression(type);
-        propertyExpression = whereExpression.children[0];
-        expression.children.push(propertyExpression);
-
-        if (!query.orderBy.contains(propertyExpression)) {
-            query.orderBy.children.push(expression);
-            return this.copy(query);
-        } else {
-            return this;
+        if (typeof orderBy.column !== "string") {
+            return false;
         }
+
+        return true;
     }
 
     _validatePropertyName(name) {
@@ -155,7 +151,7 @@ export default class Queryable {
         }
 
         let query = this._copyQuery(this.getQuery());
-        let existingMapping = query.select.value;
+        let existingMapping = query.select;
 
         properties.forEach((property) => {
             existingMapping[property] = property;
@@ -175,7 +171,7 @@ export default class Queryable {
         }
 
         let query = this._copyQuery(this.getQuery());
-        let existingMapping = query.select.value;
+        let existingMapping = query.select;
 
         mappingKeys.forEach((key) => {
             existingMapping[key] = mapping[key];
@@ -236,13 +232,17 @@ export default class Queryable {
             }
         }
 
-        Object.keys(query.select.value).forEach((key) => {
-            cloneQuery.select.value[key] = query.select.value[key];
+        Object.keys(query.select).forEach((key) => {
+            cloneQuery.select[key] = this._cloneObject(query.select[key]);
         });
 
-        query.orderBy.children.forEach(function (expression) {
-            if (!cloneQuery.orderBy.contains(expression)) {
-                cloneQuery.orderBy.children.push(expression.copy());
+        query.orderBy.forEach((orderBy) => {
+            let index = cloneQuery.orderBy.findIndex((cloneOrderBy) => {
+                return cloneOrderBy.column === orderBy.column;
+            });
+
+            if (index === -1) {
+                cloneQuery.orderBy.push(this._cloneObject(orderBy));
             }
         });
 
@@ -253,30 +253,46 @@ export default class Queryable {
         return this._createQueryableFromLambda("or", lambda);
     }
 
-    orderBy(lambda) {
-        return this._createQueryableFromOrderBy("ascending", lambda);
+    orderBy(property) {
+        if (typeof property !== "string") {
+            throw new Error("Illegal Argument: property needs to be of type string.");
+        }
+
+        let query = this._copyQuery(this.getQuery());
+
+        let index = query.orderBy.findIndex((orderBy) => {
+            return orderBy.column === property;
+        });
+
+        if (index === -1) {
+            query.orderBy.push({
+                type: "ASC",
+                column: property
+            });
+        }
+
+        return this.copy(query);
     }
 
-    orderBy(lambda) {
-        return this._createQueryableFromOrderBy("ascending", lambda);
-    }
+    orderByDesc(property) {
+        if (typeof property !== "string") {
+            throw new Error("Illegal Argument: property needs to be of type string.");
+        }
 
-    orderByDesc(lambda) {
-        return this._createQueryableFromOrderBy("descending", lambda);
-    }
+        let query = this._copyQuery(this.getQuery());
 
-    take(value) {
-        return this._createQueryableFromNumber("take", value);
-    }
+        let index = query.orderBy.findIndex((orderBy) => {
+            return orderBy.column === property;
+        });
 
-    toArrayAsync() {
-        this._assertHasProvider(this);
-        return this.provider.toArrayAsync(this);
-    }
+        if (index === -1) {
+            query.orderBy.push({
+                type: "DESC",
+                column: property
+            });
+        }
 
-    toArrayWithCountAsync() {
-        this._assertHasProvider(this);
-        return this.provider.toArrayWithCountAsync(this);
+        return this.copy(query);
     }
 
     setParameters(params) {
@@ -285,7 +301,7 @@ export default class Queryable {
         }
         let parameters = this.query.parameters;
 
-        Object.keys(params).forEach(function (key) {
+        Object.keys(params).forEach((key) => {
             parameters[key] = params[key];
         });
         return this;
@@ -300,7 +316,39 @@ export default class Queryable {
     }
 
     skip(value) {
-        return this._createQueryableFromNumber("skip", value);
+        if (typeof value !== "number") {
+            throw new Error("Illegal Argument: skip needs to be a number.");
+        }
+
+        let query = this._copyQuery(this.getQuery());
+        query.skip = value
+
+        return this.copy(query);
+    }
+
+    take(value) {
+        if (typeof value !== "number") {
+            throw new Error("Illegal Argument: take needs to be a number.");
+        }
+
+        let query = this._copyQuery(this.getQuery());
+        query.take = value
+
+        return this.copy(query);
+    }
+
+    toArrayAsync() {
+        this._assertHasProvider(this);
+        return this.provider.toArrayAsync(this);
+    }
+
+    toArrayWithCountAsync() {
+        this._assertHasProvider(this);
+        return this.provider.toArrayWithCountAsync(this);
+    }
+
+    toJson() {
+        return JSON.stringify(this.getQuery());
     }
 
     where(lambda) {
@@ -313,10 +361,18 @@ export default class Queryable {
         }
 
         let parameters = (this.query.parameters = {});
-        Object.keys(params).forEach(function (key) {
+        Object.keys(params).forEach((key) => {
             parameters[key] = params[key];
         });
         return this;
+    }
+
+    static fromJson(jsonQuery) {
+        let query = jsonQueryConverter.convert(jsonQuery);
+        let typeExpression = query.where.getMatchingNodes(new ValueExpression("type"));
+        let type = typeExpression && typeExpression.value || "Object";
+
+        return new Queryable(type, query);
     }
 
 }

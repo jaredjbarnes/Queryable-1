@@ -2,7 +2,7 @@ import Expression from "./Expression";
 
 export default class ValueExpression extends Expression {
     constructor(nodeName, value) {
-        super();
+        super("value");
         this.value = value;
         this.nodeName = nodeName;
     }

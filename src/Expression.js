@@ -1,5 +1,6 @@
 export default class Expression {
-    constructor() {
+    constructor(type) {
+        this.type = type;
         this.nodeName = "expression";
     }
 

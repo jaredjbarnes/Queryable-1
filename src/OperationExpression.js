@@ -2,10 +2,11 @@ import Expression from "./Expression";
 
 export default class OperationExpression extends Expression {
     constructor(nodeName) {
-        super();
+        super("operation");
         this.nodeName = nodeName;
         this.children = [];
     }
+
     copy() {
         var children = [];
         var copy = new OperationExpression(this.nodeName);
@@ -63,9 +64,12 @@ export default class OperationExpression extends Expression {
         this.children.forEach(childNode => {
             if (Array.isArray(childNode.children)) {
                 childNode.getMatchingNodes(node, matchedNodes);
+            } else if (childNode.nodeName === node.nodeName) {
+                matchedNodes.push(childNode);
             }
         }, matchedNodes);
 
         return matchedNodes;
     }
+
 }
