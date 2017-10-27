@@ -12,7 +12,6 @@ export default class Queryable {
         this.type = type || "Object";
         this.provider = null;
         this.query = query;
-        this.query.parameters = (query && query.parameters) || {};
         this._applyQuery(query);
     }
 
@@ -69,7 +68,6 @@ export default class Queryable {
         copy.select = this._cloneObject(query.select);
         copy.take = query.take;
         copy.skip = query.skip;
-        copy.parameters = this._cloneObject(query.parameters);
 
         return copy;
     }
@@ -295,18 +293,6 @@ export default class Queryable {
         return this.copy(query);
     }
 
-    setParameters(params) {
-        if (params == null) {
-            throw new Error("Null Argument Exception.");
-        }
-        let parameters = this.query.parameters;
-
-        Object.keys(params).forEach((key) => {
-            parameters[key] = params[key];
-        });
-        return this;
-    }
-
     select(mapping) {
         if (Array.isArray(mapping)) {
             return this._selectArray(mapping)
@@ -353,18 +339,6 @@ export default class Queryable {
 
     where(lambda) {
         return this._createQueryableFromLambda("and", lambda);
-    }
-
-    withParameters(params) {
-        if (params == null) {
-            throw new Error("Null ArgumentException");
-        }
-
-        let parameters = (this.query.parameters = {});
-        Object.keys(params).forEach((key) => {
-            parameters[key] = params[key];
-        });
-        return this;
     }
 
     static fromJson(jsonQuery) {
