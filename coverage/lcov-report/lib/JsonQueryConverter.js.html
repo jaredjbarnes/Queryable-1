@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <title>Code coverage report for lib/ExpressionBuilder.js</title>
+    <title>Code coverage report for lib/JsonQueryConverter.js</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../prettify.css" />
     <link rel="stylesheet" href="../base.css" />
@@ -16,18 +16,18 @@
 <div class='wrapper'>
   <div class='pad1'>
     <h1>
-      <a href="../index.html">all files</a> / <a href="index.html">lib/</a> ExpressionBuilder.js
+      <a href="../index.html">all files</a> / <a href="index.html">lib/</a> JsonQueryConverter.js
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
-        <span class="strong">95.24% </span>
+        <span class="strong">94.23% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>40/42</span>
+        <span class='fraction'>49/52</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">68.75% </span>
+        <span class="strong">70.83% </span>
         <span class="quiet">Branches</span>
-        <span class='fraction'>11/16</span>
+        <span class='fraction'>17/24</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
@@ -35,9 +35,9 @@
         <span class='fraction'>11/11</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">100% </span>
+        <span class="strong">97.14% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>25/25</span>
+        <span class='fraction'>34/35</span>
       </div>
     </div>
   </div>
@@ -104,13 +104,24 @@
 59
 60
 61
-62</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">2×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -122,42 +133,53 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">40×</span>
+<span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-yes">40×</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">40×</span>
+<span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">33×</span>
-<span class="cline-any cline-yes">33×</span>
+<span class="cline-any cline-yes">22×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">22×</span>
 <span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">21×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-yes">10×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-yes">9×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -173,60 +195,71 @@ Object.defineProperty(exports, "__esModule", {
 &nbsp;
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i &lt; props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; <span class="missing-if-branch" title="else path not taken" >E</span>if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { <span class="missing-if-branch" title="else path not taken" >E</span>if (protoProps) defineProperties(Constructor.prototype, protoProps); <span class="missing-if-branch" title="if path not taken" >I</span>if (staticProps) <span class="cstat-no" title="statement not covered" >defineProperties(Constructor, staticProps); </span>return Constructor; }; }();
 &nbsp;
-var _OperationExpressionBuilder = require("./OperationExpressionBuilder");
-&nbsp;
-var _OperationExpressionBuilder2 = _interopRequireDefault(_OperationExpressionBuilder);
-&nbsp;
 var _OperationExpression = require("./OperationExpression");
 &nbsp;
 var _OperationExpression2 = _interopRequireDefault(_OperationExpression);
+&nbsp;
+var _ValueExpression = require("./ValueExpression");
+&nbsp;
+var _ValueExpression2 = _interopRequireDefault(_ValueExpression);
 &nbsp;
 function _interopRequireDefault(obj) { return obj &amp;&amp; obj.__esModule ? obj : <span class="branch-1 cbranch-no" title="branch not covered" >{ default: obj };</span> }
 &nbsp;
 function _classCallCheck(instance, Constructor) { <span class="missing-if-branch" title="if path not taken" >I</span>if (!(instance instanceof Constructor)) { <span class="cstat-no" title="statement not covered" >throw new TypeError("Cannot call a class as a function"); </span>} }
 &nbsp;
-var ExpressionBuilder = function () {
-    function ExpressionBuilder(type) {
-        _classCallCheck(this, ExpressionBuilder);
-&nbsp;
-        this.type = type || "Object";
+var JsonQueryBuilder = function () {
+    function JsonQueryBuilder() {
+        _classCallCheck(this, JsonQueryBuilder);
     }
 &nbsp;
-    _createClass(ExpressionBuilder, [{
-        key: "property",
-        value: function property(_property) {
-            var whereExpression = new _OperationExpression2.default("where");
-            return new _OperationExpressionBuilder2.default(this.type, _property, whereExpression);
-        }
-    }, {
-        key: "and",
-        value: function and() {
-            var andExpression = new _OperationExpression2.default("and");
-            andExpression.children = Array.from(arguments);
+    _createClass(JsonQueryBuilder, [{
+        key: "_convertNode",
+        value: function _convertNode(node) {
+            var _this = this;
 &nbsp;
-            return andExpression;
-        }
-    }, {
-        key: "or",
-        value: function or() {
-            var orExpression = new _OperationExpression2.default("or");
-            orExpression.children = Array.from(arguments);
+            if (node == null) {
+                return node;
+            }
 &nbsp;
-            return orExpression;
+            if (node.type === "value") {
+                var valueExpression = new _ValueExpression2.default(node.nodeName, node.value);
+                return valueExpression;
+            } else if (node.type === "operation") {
+                var operationExpression = new _OperationExpression2.default(node.nodeName);
+&nbsp;
+                <span class="missing-if-branch" title="if path not taken" >I</span>if (!Array.isArray(node.children)) {
+<span class="cstat-no" title="statement not covered" >                    throw new Error("Invalid Operation Node. It didn't contain a children property of type array.");</span>
+                }
+&nbsp;
+                node.children.forEach(function (childNode) {
+                    var expression = _this._convertNode(childNode);
+                    operationExpression.children.push(expression);
+                });
+&nbsp;
+                return operationExpression;
+            } else <span class="missing-if-branch" title="else path not taken" >E</span>if (node.type == null) {
+                return node;
+            }
         }
     }, {
-        key: "value",
-        value: function value() {
-            var whereExpression = new _OperationExpression2.default("where");
-            return new _OperationExpressionBuilder2.default(this.type, null, whereExpression);
+        key: "convert",
+        value: function convert(json) {
+            var _this2 = this;
+&nbsp;
+            var object = JSON.parse(json);
+&nbsp;
+            return Object.keys(object).reduce(function (query, key) {
+                query[key] = _this2._convertNode(object[key]);
+                return query;
+            }, {});
         }
     }]);
 &nbsp;
-    return ExpressionBuilder;
+    return JsonQueryBuilder;
 }();
 &nbsp;
-exports.default = ExpressionBuilder;
-//# sourceMappingURL=ExpressionBuilder.js.map</pre></td></tr>
+exports.default = JsonQueryBuilder;
+//# sourceMappingURL=JsonQueryConverter.js.map</pre></td></tr>
 </table></pre>
 <div class='push'></div><!-- for sticky footer -->
 </div><!-- /wrapper -->

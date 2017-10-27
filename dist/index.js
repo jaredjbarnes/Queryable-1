@@ -89,9 +89,10 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Expression = function () {
-    function Expression() {
+    function Expression(type) {
         _classCallCheck(this, Expression);
 
+        this.type = type;
         this.nodeName = "expression";
     }
 
@@ -126,74 +127,6 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _OperationExpressionBuilder = __webpack_require__(4);
-
-var _OperationExpressionBuilder2 = _interopRequireDefault(_OperationExpressionBuilder);
-
-var _OperationExpression = __webpack_require__(2);
-
-var _OperationExpression2 = _interopRequireDefault(_OperationExpression);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var ExpressionBuilder = function () {
-    function ExpressionBuilder(type) {
-        _classCallCheck(this, ExpressionBuilder);
-
-        this.type = type || "Object";
-    }
-
-    _createClass(ExpressionBuilder, [{
-        key: "property",
-        value: function property(_property) {
-            var whereExpression = new _OperationExpression2.default("where");
-            return new _OperationExpressionBuilder2.default(this.type, _property, whereExpression);
-        }
-    }, {
-        key: "and",
-        value: function and() {
-            var andExpression = new _OperationExpression2.default("and");
-            andExpression.children = Array.from(arguments);
-
-            return andExpression;
-        }
-    }, {
-        key: "or",
-        value: function or() {
-            var orExpression = new _OperationExpression2.default("or");
-            orExpression.children = Array.from(arguments);
-
-            return orExpression;
-        }
-    }, {
-        key: "value",
-        value: function value() {
-            var whereExpression = new _OperationExpression2.default("where");
-            return new _OperationExpressionBuilder2.default(this.type, null, whereExpression);
-        }
-    }]);
-
-    return ExpressionBuilder;
-}();
-
-exports.default = ExpressionBuilder;
-//# sourceMappingURL=ExpressionBuilder.js.map
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 var _Expression2 = __webpack_require__(0);
 
 var _Expression3 = _interopRequireDefault(_Expression2);
@@ -212,7 +145,7 @@ var OperationExpression = function (_Expression) {
     function OperationExpression(nodeName) {
         _classCallCheck(this, OperationExpression);
 
-        var _this = _possibleConstructorReturn(this, (OperationExpression.__proto__ || Object.getPrototypeOf(OperationExpression)).call(this));
+        var _this = _possibleConstructorReturn(this, (OperationExpression.__proto__ || Object.getPrototypeOf(OperationExpression)).call(this, "operation"));
 
         _this.nodeName = nodeName;
         _this.children = [];
@@ -285,6 +218,8 @@ var OperationExpression = function (_Expression) {
             this.children.forEach(function (childNode) {
                 if (Array.isArray(childNode.children)) {
                     childNode.getMatchingNodes(node, matchedNodes);
+                } else if (childNode.nodeName === node.nodeName) {
+                    matchedNodes.push(childNode);
                 }
             }, matchedNodes);
 
@@ -299,7 +234,147 @@ exports.default = OperationExpression;
 //# sourceMappingURL=OperationExpression.js.map
 
 /***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _OperationExpressionBuilder = __webpack_require__(5);
+
+var _OperationExpressionBuilder2 = _interopRequireDefault(_OperationExpressionBuilder);
+
+var _OperationExpression = __webpack_require__(1);
+
+var _OperationExpression2 = _interopRequireDefault(_OperationExpression);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var ExpressionBuilder = function () {
+    function ExpressionBuilder(type) {
+        _classCallCheck(this, ExpressionBuilder);
+
+        this.type = type || "Object";
+    }
+
+    _createClass(ExpressionBuilder, [{
+        key: "property",
+        value: function property(_property) {
+            var whereExpression = new _OperationExpression2.default("where");
+            return new _OperationExpressionBuilder2.default(this.type, _property, whereExpression);
+        }
+    }, {
+        key: "and",
+        value: function and() {
+            var andExpression = new _OperationExpression2.default("and");
+            andExpression.children = Array.from(arguments);
+
+            return andExpression;
+        }
+    }, {
+        key: "or",
+        value: function or() {
+            var orExpression = new _OperationExpression2.default("or");
+            orExpression.children = Array.from(arguments);
+
+            return orExpression;
+        }
+    }, {
+        key: "value",
+        value: function value() {
+            var whereExpression = new _OperationExpression2.default("where");
+            return new _OperationExpressionBuilder2.default(this.type, null, whereExpression);
+        }
+    }]);
+
+    return ExpressionBuilder;
+}();
+
+exports.default = ExpressionBuilder;
+//# sourceMappingURL=ExpressionBuilder.js.map
+
+/***/ }),
 /* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _Expression2 = __webpack_require__(0);
+
+var _Expression3 = _interopRequireDefault(_Expression2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var ValueExpression = function (_Expression) {
+    _inherits(ValueExpression, _Expression);
+
+    function ValueExpression(nodeName, value) {
+        _classCallCheck(this, ValueExpression);
+
+        var _this = _possibleConstructorReturn(this, (ValueExpression.__proto__ || Object.getPrototypeOf(ValueExpression)).call(this, "value"));
+
+        _this.value = value;
+        _this.nodeName = nodeName;
+        return _this;
+    }
+
+    _createClass(ValueExpression, [{
+        key: "copy",
+        value: function copy() {
+            var value = this.value;
+
+            if ((typeof value === "undefined" ? "undefined" : _typeof(value)) === "object" && value != null) {
+                value = JSON.parse(JSON.stringify(value));
+            }
+
+            return new ValueExpression(this.nodeName, value);
+        }
+    }, {
+        key: "isEqualTo",
+        value: function isEqualTo(node) {
+            if (node && this.nodeName === node.nodeName && this.value === node.value) {
+                return true;
+            }
+            return false;
+        }
+    }, {
+        key: "contains",
+        value: function contains(node) {
+            return this.isEqualTo(node);
+        }
+    }]);
+
+    return ValueExpression;
+}(_Expression3.default);
+
+exports.default = ValueExpression;
+//# sourceMappingURL=ValueExpression.js.map
+
+/***/ }),
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -315,25 +390,31 @@ var _Expression = __webpack_require__(0);
 
 var _Expression2 = _interopRequireDefault(_Expression);
 
-var _ExpressionBuilder = __webpack_require__(1);
+var _ExpressionBuilder = __webpack_require__(2);
 
 var _ExpressionBuilder2 = _interopRequireDefault(_ExpressionBuilder);
 
-var _OperationExpression = __webpack_require__(2);
+var _OperationExpression = __webpack_require__(1);
 
 var _OperationExpression2 = _interopRequireDefault(_OperationExpression);
 
-var _OperationExpressionBuilder = __webpack_require__(4);
+var _OperationExpressionBuilder = __webpack_require__(5);
 
 var _OperationExpressionBuilder2 = _interopRequireDefault(_OperationExpressionBuilder);
 
-var _ValueExpression = __webpack_require__(5);
+var _ValueExpression = __webpack_require__(3);
 
 var _ValueExpression2 = _interopRequireDefault(_ValueExpression);
+
+var _JsonQueryConverter = __webpack_require__(7);
+
+var _JsonQueryConverter2 = _interopRequireDefault(_JsonQueryConverter);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var jsonQueryConverter = new _JsonQueryConverter2.default();
 
 var Queryable = function () {
     function Queryable(type) {
@@ -344,42 +425,47 @@ var Queryable = function () {
         this.type = type || "Object";
         this.provider = null;
         this.query = query;
-        this.query.parameters = query && query.parameters || {};
         this._applyQuery(query);
     }
 
     _createClass(Queryable, [{
         key: "_applyQuery",
         value: function _applyQuery(query) {
+            var _this = this;
+
             if (query.where != null && query.where.nodeName === "where") {
                 this.query.where = query.where;
             } else {
                 this.query.where = new _OperationExpression2.default("where");
             }
 
-            if (query.skip != null && query.skip.nodeName === "skip") {
+            if (typeof query.skip === "number") {
                 this.query.skip = query.skip;
             } else {
-                this.query.skip = new _ValueExpression2.default("skip", 0);
+                this.query.skip = 0;
             }
 
-            if (query.take != null && query.take.nodeName === "take") {
+            if (typeof query.take === "number") {
                 this.query.take = query.take;
             } else {
-                this.query.take = new _ValueExpression2.default("take", Infinity);
+                this.query.take = Infinity;
             }
 
-            if (query.orderBy != null && query.orderBy.nodeName === "orderBy") {
-                this.query.orderBy = query.orderBy;
+            if (Array.isArray(query.orderBy)) {
+                this.query.orderBy = query.orderBy.filter(function (orderBy) {
+                    return _this._isValidOrderBy(orderBy);
+                });
             } else {
-                this.query.orderBy = new _OperationExpression2.default("orderBy");
+                this.query.orderBy = [];
             }
 
-            if (query.select != null && query.select.nodeName === "select") {
+            if (this._isValidMapping(this.query.select)) {
                 this.query.select = query.select;
             } else {
-                this.query.select = new _ValueExpression2.default("select", {});
+                this.query.select = {};
             }
+
+            this.query.type = this.type;
         }
     }, {
         key: "_assertHasProvider",
@@ -389,17 +475,21 @@ var Queryable = function () {
             }
         }
     }, {
+        key: "_cloneObject",
+        value: function _cloneObject(object) {
+            return JSON.parse(JSON.stringify(object));
+        }
+    }, {
         key: "_copyQuery",
         value: function _copyQuery(query) {
             var copy = {};
 
             copy.where = query.where.copy();
-            copy.orderBy = query.orderBy.copy();
-            copy.select = query.select.copy();
-            copy.take = query.take.copy();
-            copy.skip = query.skip.copy();
-
-            copy.parameters = JSON.parse(JSON.stringify(query.parameters));
+            copy.orderBy = this._cloneObject(query.orderBy);
+            copy.select = this._cloneObject(query.select);
+            copy.take = query.take;
+            copy.skip = query.skip;
+            copy.type = query.type;
 
             return copy;
         }
@@ -439,48 +529,34 @@ var Queryable = function () {
             return this.copy(query);
         }
     }, {
-        key: "_createQueryableFromNumber",
-        value: function _createQueryableFromNumber(type, value) {
-            if (typeof value !== "number") {
-                throw new Error("Invalid Argument: Expected a number.");
+        key: "_isValidMapping",
+        value: function _isValidMapping(mapping) {
+            if (mapping == null) {
+                return false;
             }
 
-            var query = this._copyQuery(this.getQuery());
-            query[type] = new _ValueExpression2.default(type, value);
-
-            return this.copy(query);
+            return Object.keys(mapping).every(function (key) {
+                return typeof key === "string" && typeof mapping[key] === "string";
+            });
         }
     }, {
-        key: "_createQueryableFromOrderBy",
-        value: function _createQueryableFromOrderBy(type) {
-            var lambda = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () {};
+        key: "_isValidOrderBy",
+        value: function _isValidOrderBy(orderBy) {
+            var keys = Object.keys(orderBy);
 
-            var whereExpression = void 0;
-            var propertyExpression = void 0;
-            var query = this._copyQuery(this.getQuery());
-
-            if (typeof lambda === "function") {
-                whereExpression = lambda(new _ExpressionBuilder2.default(this.type)).getExpression();
-            } else if (lambda instanceof _OperationExpressionBuilder2.default) {
-                whereExpression = lambda.getExpression();
-            } else {
-                throw new Error("Invalid Argument: Expected a OperationExpressionBuilder, or a function.");
+            if (keys.length !== 2) {
+                return false;
             }
 
-            if (!(whereExpression instanceof _Expression2.default)) {
-                throw new Error("Invalid expression: You may be missing a return.");
+            if (orderBy.type !== "ASC" && orderBy.type !== "DESC") {
+                return false;
             }
 
-            var expression = new _OperationExpression2.default(type);
-            propertyExpression = whereExpression.children[0];
-            expression.children.push(propertyExpression);
-
-            if (!query.orderBy.contains(propertyExpression)) {
-                query.orderBy.children.push(expression);
-                return this.copy(query);
-            } else {
-                return this;
+            if (typeof orderBy.column !== "string") {
+                return false;
             }
+
+            return true;
         }
     }, {
         key: "_validatePropertyName",
@@ -490,10 +566,10 @@ var Queryable = function () {
     }, {
         key: "_selectArray",
         value: function _selectArray(properties) {
-            var _this = this;
+            var _this2 = this;
 
             var hasValidMapping = properties.every(function (property) {
-                return _this._validatePropertyName(property);
+                return _this2._validatePropertyName(property);
             });
 
             if (!hasValidMapping) {
@@ -501,7 +577,7 @@ var Queryable = function () {
             }
 
             var query = this._copyQuery(this.getQuery());
-            var existingMapping = query.select.value;
+            var existingMapping = query.select;
 
             properties.forEach(function (property) {
                 existingMapping[property] = property;
@@ -512,11 +588,11 @@ var Queryable = function () {
     }, {
         key: "_selectObject",
         value: function _selectObject(mapping) {
-            var _this2 = this;
+            var _this3 = this;
 
             var mappingKeys = Object.keys(mapping);
             var hasValidMapping = mappingKeys.every(function (key) {
-                return _this2._validatePropertyName(key) && _this2._validatePropertyName(mapping[key]);
+                return _this3._validatePropertyName(key) && _this3._validatePropertyName(mapping[key]);
             });
 
             if (!hasValidMapping) {
@@ -524,7 +600,7 @@ var Queryable = function () {
             }
 
             var query = this._copyQuery(this.getQuery());
-            var existingMapping = query.select.value;
+            var existingMapping = query.select;
 
             mappingKeys.forEach(function (key) {
                 existingMapping[key] = mapping[key];
@@ -563,6 +639,8 @@ var Queryable = function () {
     }, {
         key: "merge",
         value: function merge(queryable) {
+            var _this4 = this;
+
             if (!(queryable instanceof Queryable)) {
                 throw new Error("Expected a queryable to be passed in.");
             }
@@ -588,15 +666,21 @@ var Queryable = function () {
                 }
             }
 
-            Object.keys(query.select.value).forEach(function (key) {
-                cloneQuery.select.value[key] = query.select.value[key];
+            Object.keys(query.select).forEach(function (key) {
+                cloneQuery.select[key] = _this4._cloneObject(query.select[key]);
             });
 
-            query.orderBy.children.forEach(function (expression) {
-                if (!cloneQuery.orderBy.contains(expression)) {
-                    cloneQuery.orderBy.children.push(expression.copy());
+            query.orderBy.forEach(function (orderBy) {
+                var index = cloneQuery.orderBy.findIndex(function (cloneOrderBy) {
+                    return cloneOrderBy.column === orderBy.column;
+                });
+
+                if (index === -1) {
+                    cloneQuery.orderBy.push(_this4._cloneObject(orderBy));
                 }
             });
+
+            cloneQuery.type = query.type;
 
             return this.copy(cloneQuery);
         }
@@ -607,23 +691,80 @@ var Queryable = function () {
         }
     }, {
         key: "orderBy",
-        value: function orderBy(lambda) {
-            return this._createQueryableFromOrderBy("ascending", lambda);
-        }
-    }, {
-        key: "orderBy",
-        value: function orderBy(lambda) {
-            return this._createQueryableFromOrderBy("ascending", lambda);
+        value: function orderBy(property) {
+            if (typeof property !== "string") {
+                throw new Error("Illegal Argument: property needs to be of type string.");
+            }
+
+            var query = this._copyQuery(this.getQuery());
+
+            var index = query.orderBy.findIndex(function (orderBy) {
+                return orderBy.column === property;
+            });
+
+            if (index === -1) {
+                query.orderBy.push({
+                    type: "ASC",
+                    column: property
+                });
+            }
+
+            return this.copy(query);
         }
     }, {
         key: "orderByDesc",
-        value: function orderByDesc(lambda) {
-            return this._createQueryableFromOrderBy("descending", lambda);
+        value: function orderByDesc(property) {
+            if (typeof property !== "string") {
+                throw new Error("Illegal Argument: property needs to be of type string.");
+            }
+
+            var query = this._copyQuery(this.getQuery());
+
+            var index = query.orderBy.findIndex(function (orderBy) {
+                return orderBy.column === property;
+            });
+
+            if (index === -1) {
+                query.orderBy.push({
+                    type: "DESC",
+                    column: property
+                });
+            }
+
+            return this.copy(query);
+        }
+    }, {
+        key: "select",
+        value: function select(mapping) {
+            if (Array.isArray(mapping)) {
+                return this._selectArray(mapping);
+            } else {
+                return this._selectObject(mapping);
+            }
+        }
+    }, {
+        key: "skip",
+        value: function skip(value) {
+            if (typeof value !== "number") {
+                throw new Error("Illegal Argument: skip needs to be a number.");
+            }
+
+            var query = this._copyQuery(this.getQuery());
+            query.skip = value;
+
+            return this.copy(query);
         }
     }, {
         key: "take",
         value: function take(value) {
-            return this._createQueryableFromNumber("take", value);
+            if (typeof value !== "number") {
+                throw new Error("Illegal Argument: take needs to be a number.");
+            }
+
+            var query = this._copyQuery(this.getQuery());
+            query.take = value;
+
+            return this.copy(query);
         }
     }, {
         key: "toArrayAsync",
@@ -638,49 +779,20 @@ var Queryable = function () {
             return this.provider.toArrayWithCountAsync(this);
         }
     }, {
-        key: "setParameters",
-        value: function setParameters(params) {
-            if (params == null) {
-                throw new Error("Null Argument Exception.");
-            }
-            var parameters = this.query.parameters;
-
-            Object.keys(params).forEach(function (key) {
-                parameters[key] = params[key];
-            });
-            return this;
-        }
-    }, {
-        key: "select",
-        value: function select(mapping) {
-            if (Array.isArray(mapping)) {
-                return this._selectArray(mapping);
-            } else {
-                return this._selectObject(mapping);
-            }
-        }
-    }, {
-        key: "skip",
-        value: function skip(value) {
-            return this._createQueryableFromNumber("skip", value);
+        key: "toJson",
+        value: function toJson() {
+            return JSON.stringify(this.getQuery());
         }
     }, {
         key: "where",
         value: function where(lambda) {
             return this._createQueryableFromLambda("and", lambda);
         }
-    }, {
-        key: "withParameters",
-        value: function withParameters(params) {
-            if (params == null) {
-                throw new Error("Null ArgumentException");
-            }
-
-            var parameters = this.query.parameters = {};
-            Object.keys(params).forEach(function (key) {
-                parameters[key] = params[key];
-            });
-            return this;
+    }], [{
+        key: "fromJson",
+        value: function fromJson(jsonQuery) {
+            var query = jsonQueryConverter.convert(jsonQuery);
+            return new Queryable(query.type, query);
         }
     }]);
 
@@ -691,7 +803,7 @@ exports.default = Queryable;
 //# sourceMappingURL=Queryable.js.map
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -703,11 +815,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _ValueExpression = __webpack_require__(5);
+var _ValueExpression = __webpack_require__(3);
 
 var _ValueExpression2 = _interopRequireDefault(_ValueExpression);
 
-var _OperationExpression = __webpack_require__(2);
+var _OperationExpression = __webpack_require__(1);
 
 var _OperationExpression2 = _interopRequireDefault(_OperationExpression);
 
@@ -715,11 +827,11 @@ var _Expression = __webpack_require__(0);
 
 var _Expression2 = _interopRequireDefault(_Expression);
 
-var _ExpressionBuilder = __webpack_require__(1);
+var _ExpressionBuilder = __webpack_require__(2);
 
 var _ExpressionBuilder2 = _interopRequireDefault(_ExpressionBuilder);
 
-var _Queryable = __webpack_require__(3);
+var _Queryable = __webpack_require__(4);
 
 var _Queryable2 = _interopRequireDefault(_Queryable);
 
@@ -759,7 +871,7 @@ var OperationExpressionBuilder = function () {
                 return this.rootExpression;
             } else if (results instanceof _Queryable2.default) {
                 var _operationExpression = new _OperationExpression2.default(type);
-                var queryableExpression = new _ValueExpression2.default("queryable", results);
+                var queryableExpression = new _ValueExpression2.default("queryable", results.getQuery());
 
                 _operationExpression.children.push(propertyAccessExpression, queryableExpression);
 
@@ -924,78 +1036,6 @@ exports.default = OperationExpressionBuilder;
 //# sourceMappingURL=OperationExpressionBuilder.js.map
 
 /***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _Expression2 = __webpack_require__(0);
-
-var _Expression3 = _interopRequireDefault(_Expression2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var ValueExpression = function (_Expression) {
-    _inherits(ValueExpression, _Expression);
-
-    function ValueExpression(nodeName, value) {
-        _classCallCheck(this, ValueExpression);
-
-        var _this = _possibleConstructorReturn(this, (ValueExpression.__proto__ || Object.getPrototypeOf(ValueExpression)).call(this));
-
-        _this.value = value;
-        _this.nodeName = nodeName;
-        return _this;
-    }
-
-    _createClass(ValueExpression, [{
-        key: "copy",
-        value: function copy() {
-            var value = this.value;
-
-            if ((typeof value === "undefined" ? "undefined" : _typeof(value)) === "object" && value != null) {
-                value = JSON.parse(JSON.stringify(value));
-            }
-
-            return new ValueExpression(this.nodeName, value);
-        }
-    }, {
-        key: "isEqualTo",
-        value: function isEqualTo(node) {
-            if (node && this.nodeName === node.nodeName && this.value === node.value) {
-                return true;
-            }
-            return false;
-        }
-    }, {
-        key: "contains",
-        value: function contains(node) {
-            return this.isEqualTo(node);
-        }
-    }]);
-
-    return ValueExpression;
-}(_Expression3.default);
-
-exports.default = ValueExpression;
-//# sourceMappingURL=ValueExpression.js.map
-
-/***/ }),
 /* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1007,7 +1047,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.ExpressionVisitor = exports.ExpressionBuilder = exports.Expression = exports.Queryable = undefined;
 
-var _Queryable = __webpack_require__(3);
+var _Queryable = __webpack_require__(4);
 
 var _Queryable2 = _interopRequireDefault(_Queryable);
 
@@ -1015,11 +1055,11 @@ var _Expression = __webpack_require__(0);
 
 var _Expression2 = _interopRequireDefault(_Expression);
 
-var _ExpressionBuilder = __webpack_require__(1);
+var _ExpressionBuilder = __webpack_require__(2);
 
 var _ExpressionBuilder2 = _interopRequireDefault(_ExpressionBuilder);
 
-var _ExpressionVisitor = __webpack_require__(7);
+var _ExpressionVisitor = __webpack_require__(8);
 
 var _ExpressionVisitor2 = _interopRequireDefault(_ExpressionVisitor);
 
@@ -1033,6 +1073,85 @@ exports.ExpressionVisitor = _ExpressionVisitor2.default;
 
 /***/ }),
 /* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _OperationExpression = __webpack_require__(1);
+
+var _OperationExpression2 = _interopRequireDefault(_OperationExpression);
+
+var _ValueExpression = __webpack_require__(3);
+
+var _ValueExpression2 = _interopRequireDefault(_ValueExpression);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var JsonQueryBuilder = function () {
+    function JsonQueryBuilder() {
+        _classCallCheck(this, JsonQueryBuilder);
+    }
+
+    _createClass(JsonQueryBuilder, [{
+        key: "_convertNode",
+        value: function _convertNode(node) {
+            var _this = this;
+
+            if (node == null) {
+                return node;
+            }
+
+            if (node.type === "value") {
+                var valueExpression = new _ValueExpression2.default(node.nodeName, node.value);
+                return valueExpression;
+            } else if (node.type === "operation") {
+                var operationExpression = new _OperationExpression2.default(node.nodeName);
+
+                if (!Array.isArray(node.children)) {
+                    throw new Error("Invalid Operation Node. It didn't contain a children property of type array.");
+                }
+
+                node.children.forEach(function (childNode) {
+                    var expression = _this._convertNode(childNode);
+                    operationExpression.children.push(expression);
+                });
+
+                return operationExpression;
+            } else if (node.type == null) {
+                return node;
+            }
+        }
+    }, {
+        key: "convert",
+        value: function convert(json) {
+            var _this2 = this;
+
+            var object = JSON.parse(json);
+
+            return Object.keys(object).reduce(function (query, key) {
+                query[key] = _this2._convertNode(object[key]);
+                return query;
+            }, {});
+        }
+    }]);
+
+    return JsonQueryBuilder;
+}();
+
+exports.default = JsonQueryBuilder;
+//# sourceMappingURL=JsonQueryConverter.js.map
+
+/***/ }),
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
