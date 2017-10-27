@@ -48,6 +48,8 @@ export default class Queryable {
             this.query.select = {};
         }
 
+        this.query.type = this.type;
+
     }
 
     _assertHasProvider() {
@@ -68,6 +70,7 @@ export default class Queryable {
         copy.select = this._cloneObject(query.select);
         copy.take = query.take;
         copy.skip = query.skip;
+        copy.type = query.type;
 
         return copy;
     }
@@ -244,6 +247,8 @@ export default class Queryable {
             }
         });
 
+        cloneQuery.type = query.type;
+
         return this.copy(cloneQuery);
     }
 
@@ -343,10 +348,7 @@ export default class Queryable {
 
     static fromJson(jsonQuery) {
         let query = jsonQueryConverter.convert(jsonQuery);
-        let typeExpression = query.where.getMatchingNodes(new ValueExpression("type"));
-        let type = typeExpression && typeExpression.value || "Object";
-
-        return new Queryable(type, query);
+        return new Queryable(query.type, query);
     }
 
 }
