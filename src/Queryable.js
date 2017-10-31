@@ -248,6 +248,8 @@ export default class Queryable {
         });
 
         cloneQuery.type = query.type;
+        cloneQuery.take = query.take;
+        cloneQuery.skip = query.skip;
 
         return this.copy(cloneQuery);
     }

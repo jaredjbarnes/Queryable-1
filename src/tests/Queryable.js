@@ -269,42 +269,6 @@ exports["Queryable: Constructor with query (orderByDesc: w/o lambda or Expressio
     });
 };
 
-exports["Queryable: Constructor with query (setParameters: obj passed in)"] = function () {
-    let queryable = new Queryable();
-    const testParameters = { test1: 1, test2: 2 };
-    queryable = queryable.setParameters(testParameters);
-
-    const query = queryable.getQuery();
-
-    assert.deepEqual(testParameters, query.parameters);
-};
-
-exports["Queryable: Constructor with query (setParameters: w/o parameters passed in)"] = function () {
-    let queryable = new Queryable();
-
-    assert.throws(() => {
-        queryable = queryable.setParameters();
-    });
-};
-
-exports["Queryable: Constructor with query (withParameters: obj passed in)"] = function () {
-    let queryable = new Queryable();
-    const testParameters = { test1: 1, test2: 2 };
-    queryable = queryable.withParameters(testParameters);
-
-    const query = queryable.getQuery();
-
-    assert.deepEqual(testParameters, query.parameters);
-};
-
-exports["Queryable: Constructor with query (withParameters: w/o parameters passed in)"] = function () {
-    let queryable = new Queryable();
-
-    assert.throws(() => {
-        queryable = queryable.withParameters();
-    });
-};
-
 exports["Queryable: Constructor with query (merge: merging queryable is empty)"] = function () {
     let queryable1 = new Queryable();
     let queryable2 = new Queryable();
