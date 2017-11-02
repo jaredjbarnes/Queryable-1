@@ -20,14 +20,14 @@
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
-        <span class="strong">94.23% </span>
+        <span class="strong">80% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>49/52</span>
+        <span class='fraction'>44/55</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">70.83% </span>
+        <span class="strong">57.69% </span>
         <span class="quiet">Branches</span>
-        <span class='fraction'>17/24</span>
+        <span class='fraction'>15/26</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
@@ -35,9 +35,9 @@
         <span class='fraction'>11/11</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">97.14% </span>
+        <span class="strong">76.32% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>34/35</span>
+        <span class='fraction'>29/38</span>
       </div>
     </div>
   </div>
@@ -115,7 +115,13 @@
 70
 71
 72
-73</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+73
+74
+75
+76
+77
+78
+79</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -143,16 +149,22 @@
 <span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">22×</span>
+<span class="cline-any cline-yes">8×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">22×</span>
-<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">21×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
 <span class="cline-any cline-yes">6×</span>
-<span class="cline-any cline-yes">6×</span>
-<span class="cline-any cline-yes">15×</span>
 <span class="cline-any cline-yes">6×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">6×</span>
@@ -160,13 +172,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">6×</span>
-<span class="cline-any cline-yes">10×</span>
-<span class="cline-any cline-yes">10×</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">6×</span>
-<span class="cline-any cline-yes">9×</span>
-<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -177,8 +189,8 @@
 <span class="cline-any cline-yes">2×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2×</span>
-<span class="cline-any cline-yes">12×</span>
-<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -217,14 +229,20 @@ var JsonQueryBuilder = function () {
         value: function _convertNode(node) {
             var _this = this;
 &nbsp;
-            if (node == null) {
-                return node;
+            <span class="missing-if-branch" title="if path not taken" >I</span>if (node == null) {
+<span class="cstat-no" title="statement not covered" >                return node;</span>
             }
 &nbsp;
             if (node.type === "value") {
-                var valueExpression = new _ValueExpression2.default(node.nodeName, node.value);
+                <span class="missing-if-branch" title="if path not taken" >I</span>if (node.nodeName === "queryable") {
+<span class="cstat-no" title="statement not covered" >                    node.value.where = this._convertNode(node.value.where);</span>
+<span class="cstat-no" title="statement not covered" >                    var _valueExpression = new _ValueExpression2.default(node.nodeName, node.value);</span>
+                } else {
+                    var _valueExpression2 = new _ValueExpression2.default(node.nodeName, node.value);
+                }
+&nbsp;
                 return valueExpression;
-            } else if (node.type === "operation") {
+            } else <span class="missing-if-branch" title="else path not taken" >E</span>if (node.type === "operation") {
                 var operationExpression = new _OperationExpression2.default(node.nodeName);
 &nbsp;
                 <span class="missing-if-branch" title="if path not taken" >I</span>if (!Array.isArray(node.children)) {
@@ -233,12 +251,12 @@ var JsonQueryBuilder = function () {
 &nbsp;
                 node.children.forEach(function (childNode) {
                     var expression = _this._convertNode(childNode);
-                    operationExpression.children.push(expression);
+<span class="cstat-no" title="statement not covered" >                    operationExpression.children.push(expression);</span>
                 });
 &nbsp;
-                return operationExpression;
-            } else <span class="missing-if-branch" title="else path not taken" >E</span>if (node.type == null) {
-                return node;
+<span class="cstat-no" title="statement not covered" >                return operationExpression;</span>
+            } else <span class="cstat-no" title="statement not covered" >if (node.type == null) {</span>
+<span class="cstat-no" title="statement not covered" >                return node;</span>
             }
         }
     }, {
@@ -250,7 +268,7 @@ var JsonQueryBuilder = function () {
 &nbsp;
             return Object.keys(object).reduce(function (query, key) {
                 query[key] = _this2._convertNode(object[key]);
-                return query;
+<span class="cstat-no" title="statement not covered" >                return query;</span>
             }, {});
         }
     }]);
@@ -265,7 +283,7 @@ exports.default = JsonQueryBuilder;
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Tue Oct 31 2017 11:14:37 GMT-0600 (MDT)
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Thu Nov 02 2017 15:42:01 GMT-0600 (MDT)
 </div>
 </div>
 <script src="../prettify.js"></script>
