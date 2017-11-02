@@ -8,14 +8,14 @@ export default class JsonQueryBuilder {
         }
 
         if (node.type === "value") {
+            
             if (node.nodeName === "queryable") {
                 node.value.where = this._convertNode(node.value.where);
-                let valueExpression = new ValueExpression(node.nodeName, node.value);
+                return new ValueExpression(node.nodeName, node.value);
             } else {
-                let valueExpression = new ValueExpression(node.nodeName, node.value);
+                return new ValueExpression(node.nodeName, node.value);
             }
 
-            return valueExpression;
         } else if (node.type === "operation") {
             let operationExpression = new OperationExpression(node.nodeName);
 

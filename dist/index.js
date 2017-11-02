@@ -1123,14 +1123,13 @@ var JsonQueryBuilder = function () {
             }
 
             if (node.type === "value") {
+
                 if (node.nodeName === "queryable") {
                     node.value.where = this._convertNode(node.value.where);
-                    var _valueExpression = new _ValueExpression2.default(node.nodeName, node.value);
+                    return new _ValueExpression2.default(node.nodeName, node.value);
                 } else {
-                    var _valueExpression2 = new _ValueExpression2.default(node.nodeName, node.value);
+                    return new _ValueExpression2.default(node.nodeName, node.value);
                 }
-
-                return valueExpression;
             } else if (node.type === "operation") {
                 var operationExpression = new _OperationExpression2.default(node.nodeName);
 
