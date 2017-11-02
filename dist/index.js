@@ -70,7 +70,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 6);
+/******/ 	return __webpack_require__(__webpack_require__.s = 7);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -406,15 +406,15 @@ var _ValueExpression = __webpack_require__(2);
 
 var _ValueExpression2 = _interopRequireDefault(_ValueExpression);
 
-var _JsonQueryConverter = __webpack_require__(7);
+var _QueryConverter = __webpack_require__(6);
 
-var _JsonQueryConverter2 = _interopRequireDefault(_JsonQueryConverter);
+var _QueryConverter2 = _interopRequireDefault(_QueryConverter);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var jsonQueryConverter = new _JsonQueryConverter2.default();
+var queryConverter = new _QueryConverter2.default();
 
 var Queryable = function () {
     function Queryable(type) {
@@ -793,7 +793,7 @@ var Queryable = function () {
     }], [{
         key: "fromJson",
         value: function fromJson(jsonQuery) {
-            var query = jsonQueryConverter.convert(jsonQuery);
+            var query = queryConverter.convert(jsonQuery);
             return new Queryable(query.type, query);
         }
     }]);
@@ -1047,52 +1047,6 @@ exports.default = OperationExpressionBuilder;
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.OperationExpression = exports.ValueExpression = exports.ExpressionVisitor = exports.ExpressionBuilder = exports.Expression = exports.Queryable = undefined;
-
-var _Queryable = __webpack_require__(4);
-
-var _Queryable2 = _interopRequireDefault(_Queryable);
-
-var _Expression = __webpack_require__(0);
-
-var _Expression2 = _interopRequireDefault(_Expression);
-
-var _ExpressionBuilder = __webpack_require__(3);
-
-var _ExpressionBuilder2 = _interopRequireDefault(_ExpressionBuilder);
-
-var _ExpressionVisitor = __webpack_require__(8);
-
-var _ExpressionVisitor2 = _interopRequireDefault(_ExpressionVisitor);
-
-var _ValueExpression = __webpack_require__(2);
-
-var _ValueExpression2 = _interopRequireDefault(_ValueExpression);
-
-var _OperationExpression = __webpack_require__(1);
-
-var _OperationExpression2 = _interopRequireDefault(_OperationExpression);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.Queryable = _Queryable2.default;
-exports.Expression = _Expression2.default;
-exports.ExpressionBuilder = _ExpressionBuilder2.default;
-exports.ExpressionVisitor = _ExpressionVisitor2.default;
-exports.ValueExpression = _ValueExpression2.default;
-exports.OperationExpression = _OperationExpression2.default;
-//# sourceMappingURL=index.js.map
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -1108,12 +1062,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var JsonQueryBuilder = function () {
-    function JsonQueryBuilder() {
-        _classCallCheck(this, JsonQueryBuilder);
+var QueryBuilder = function () {
+    function QueryBuilder() {
+        _classCallCheck(this, QueryBuilder);
     }
 
-    _createClass(JsonQueryBuilder, [{
+    _createClass(QueryBuilder, [{
         key: "_convertNode",
         value: function _convertNode(node) {
             var _this = this;
@@ -1148,24 +1102,84 @@ var JsonQueryBuilder = function () {
             }
         }
     }, {
-        key: "convert",
-        value: function convert(json) {
-            var _this2 = this;
-
+        key: "convertJson",
+        value: function convertJson(json) {
             var object = JSON.parse(json);
+            return this.convertObject(object);
+        }
+    }, {
+        key: "convertObject",
+        value: function convertObject(object) {
+            var _this2 = this;
 
             return Object.keys(object).reduce(function (query, key) {
                 query[key] = _this2._convertNode(object[key]);
                 return query;
             }, {});
         }
+    }, {
+        key: "convert",
+        value: function convert(json) {
+            return this.convertJson(json);
+        }
     }]);
 
-    return JsonQueryBuilder;
+    return QueryBuilder;
 }();
 
-exports.default = JsonQueryBuilder;
-//# sourceMappingURL=JsonQueryConverter.js.map
+exports.default = QueryBuilder;
+//# sourceMappingURL=QueryConverter.js.map
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.QueryConverter = exports.OperationExpression = exports.ValueExpression = exports.ExpressionVisitor = exports.ExpressionBuilder = exports.Expression = exports.Queryable = undefined;
+
+var _Queryable = __webpack_require__(4);
+
+var _Queryable2 = _interopRequireDefault(_Queryable);
+
+var _Expression = __webpack_require__(0);
+
+var _Expression2 = _interopRequireDefault(_Expression);
+
+var _ExpressionBuilder = __webpack_require__(3);
+
+var _ExpressionBuilder2 = _interopRequireDefault(_ExpressionBuilder);
+
+var _ExpressionVisitor = __webpack_require__(8);
+
+var _ExpressionVisitor2 = _interopRequireDefault(_ExpressionVisitor);
+
+var _ValueExpression = __webpack_require__(2);
+
+var _ValueExpression2 = _interopRequireDefault(_ValueExpression);
+
+var _OperationExpression = __webpack_require__(1);
+
+var _OperationExpression2 = _interopRequireDefault(_OperationExpression);
+
+var _QueryConverter = __webpack_require__(6);
+
+var _QueryConverter2 = _interopRequireDefault(_QueryConverter);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.Queryable = _Queryable2.default;
+exports.Expression = _Expression2.default;
+exports.ExpressionBuilder = _ExpressionBuilder2.default;
+exports.ExpressionVisitor = _ExpressionVisitor2.default;
+exports.ValueExpression = _ValueExpression2.default;
+exports.OperationExpression = _OperationExpression2.default;
+exports.QueryConverter = _QueryConverter2.default;
+//# sourceMappingURL=index.js.map
 
 /***/ }),
 /* 8 */

@@ -1,14 +1,14 @@
 import OperationExpression from "./OperationExpression";
 import ValueExpression from "./ValueExpression";
 
-export default class JsonQueryBuilder {
+export default class QueryBuilder {
     _convertNode(node) {
         if (node == null) {
             return node;
         }
 
         if (node.type === "value") {
-            
+
             if (node.nodeName === "queryable") {
                 node.value.where = this._convertNode(node.value.where);
                 return new ValueExpression(node.nodeName, node.value);
@@ -34,13 +34,19 @@ export default class JsonQueryBuilder {
         }
     }
 
-    convert(json) {
+    convertJson(json) {
         let object = JSON.parse(json);
+        return this.convertObject(object);
+    }
 
+    convertObject(object) {
         return Object.keys(object).reduce((query, key) => {
             query[key] = this._convertNode(object[key]);
             return query;
         }, {});
+    }
 
+    convert(json) {
+        return this.convertJson(json);
     }
 }

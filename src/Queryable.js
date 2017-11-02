@@ -3,9 +3,9 @@ import ExpressionBuilder from "./ExpressionBuilder";
 import OperationExpression from "./OperationExpression";
 import OperationExpressionBuilder from "./OperationExpressionBuilder";
 import ValueExpression from "./ValueExpression";
-import JsonQueryConverter from "./JsonQueryConverter";
+import QueryConverter from "./QueryConverter";
 
-const jsonQueryConverter = new JsonQueryConverter();
+const queryConverter = new QueryConverter();
 
 export default class Queryable {
     constructor(type, query = {}) {
@@ -349,7 +349,7 @@ export default class Queryable {
     }
 
     static fromJson(jsonQuery) {
-        let query = jsonQueryConverter.convert(jsonQuery);
+        let query = queryConverter.convert(jsonQuery);
         return new Queryable(query.type, query);
     }
 
