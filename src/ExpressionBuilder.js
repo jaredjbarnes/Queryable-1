@@ -13,14 +13,18 @@ export default class ExpressionBuilder {
 
     and() {
         let andExpression = new OperationExpression("and");
-        andExpression.children = Array.from(arguments);
+        andExpression.children = Array.from(arguments).map((whereExpression)=>{
+            return whereExpression.children[0];
+        });
 
         return andExpression;
     }
 
     or() {
         let orExpression = new OperationExpression("or");
-        orExpression.children = Array.from(arguments);
+        orExpression.children = Array.from(arguments).map((whereExpression)=>{
+            return whereExpression.children[0];
+        });
 
         return orExpression;
     }

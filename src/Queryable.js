@@ -91,6 +91,12 @@ export default class Queryable {
             throw new Error("Invalid expression: You may be missing a return.");
         }
 
+        if (whereExpression.nodeName !== "where") {
+            let wrapper = new OperationExpression("where");
+            wrapper.children.push(whereExpression);
+            whereExpression = wrapper;
+        }
+
         if (query.where.children.length === 0) {
             query.where = whereExpression;
         } else {

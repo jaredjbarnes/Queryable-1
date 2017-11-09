@@ -41,6 +41,46 @@ exports["Queryable: Constructor with query (where: chain)"] = function () {
     assert.equal("Barnes", query.where.children[0].children[1].children[1].value);
 };
 
+exports["Queryable: Constructor with query (where: expressionBuilder.and)"] = function() {
+    let queryable = new Queryable();
+    queryable = queryable
+        .where(expBuilder => {
+            return expBuilder.and(
+                expBuilder.property("firstName").isEqualTo("Jared"),
+                expBuilder.property("lastName").isEqualTo("Barnes"));
+        });
+
+    const query = queryable.getQuery();
+
+    assert.equal("and", query.where.children[0].nodeName);
+    assert.equal("isEqualTo", query.where.children[0].children[0].nodeName);
+    assert.equal("firstName", query.where.children[0].children[0].children[0].children[1].value);
+    assert.equal("Jared", query.where.children[0].children[0].children[1].value);
+    assert.equal("isEqualTo", query.where.children[0].children[1].nodeName);
+    assert.equal("lastName", query.where.children[0].children[1].children[0].children[1].value);
+    assert.equal("Barnes", query.where.children[0].children[1].children[1].value);
+}
+
+exports["Queryable: Constructor with query (where: expressionBuilder.or)"] = function() {
+    let queryable = new Queryable();
+    queryable = queryable
+        .where(expBuilder => {
+            return expBuilder.or(
+                expBuilder.property("firstName").isEqualTo("Jared"),
+                expBuilder.property("lastName").isEqualTo("Barnes"));
+        });
+
+    const query = queryable.getQuery();
+
+    assert.equal("or", query.where.children[0].nodeName);
+    assert.equal("isEqualTo", query.where.children[0].children[0].nodeName);
+    assert.equal("firstName", query.where.children[0].children[0].children[0].children[1].value);
+    assert.equal("Jared", query.where.children[0].children[0].children[1].value);
+    assert.equal("isEqualTo", query.where.children[0].children[1].nodeName);
+    assert.equal("lastName", query.where.children[0].children[1].children[0].children[1].value);
+    assert.equal("Barnes", query.where.children[0].children[1].children[1].value);
+}
+
 exports["Queryable: Constructor with query (where: with ExpressionBuilder instance.)"] = function () {
     const expressionBuilder = new ExpressionBuilder();
     const expression = expressionBuilder.property("firstName").isEqualTo("Jared");
