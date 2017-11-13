@@ -347,7 +347,9 @@ var ExpressionBuilder = function () {
         key: "and",
         value: function and() {
             var andExpression = new _OperationExpression2.default("and");
-            andExpression.children = Array.from(arguments);
+            andExpression.children = Array.from(arguments).map(function (whereExpression) {
+                return whereExpression.children[0];
+            });
 
             return andExpression;
         }
@@ -355,7 +357,9 @@ var ExpressionBuilder = function () {
         key: "or",
         value: function or() {
             var orExpression = new _OperationExpression2.default("or");
-            orExpression.children = Array.from(arguments);
+            orExpression.children = Array.from(arguments).map(function (whereExpression) {
+                return whereExpression.children[0];
+            });
 
             return orExpression;
         }
@@ -511,6 +515,12 @@ var Queryable = function () {
 
             if (!(whereExpression instanceof _Expression2.default)) {
                 throw new Error("Invalid expression: You may be missing a return.");
+            }
+
+            if (whereExpression.nodeName !== "where") {
+                var wrapper = new _OperationExpression2.default("where");
+                wrapper.children.push(whereExpression);
+                whereExpression = wrapper;
             }
 
             if (query.where.children.length === 0) {
