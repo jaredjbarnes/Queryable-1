@@ -7,13 +7,28 @@ export default class ValueExpression extends Expression {
         this.nodeName = nodeName;
     }
 
-    copy() {
-        let value = this.value;
+    _cloneObject(obj) {
+        let clone;
 
-        if (typeof value === "object" && value != null) {
-            value = JSON.parse(JSON.stringify(value));
+        if (obj instanceof Date) {
+            return new Date(obj);
+        } else if (this._isObject(obj)) {
+            clone = {};
+        } else if (Array.isArray(obj)) {
+            clone = [];
+        } else {
+            return obj;
         }
 
+        Object.keys(obj).forEach((key) => {
+            clone[key] = this._cloneObject(obj[key]);
+        });
+
+        return clone;
+    }
+
+    copy() {
+        const value = this._cloneObject(this.value);
         return new ValueExpression(this.nodeName, value);
     }
 
@@ -22,6 +37,10 @@ export default class ValueExpression extends Expression {
             return true;
         }
         return false;
+    }
+
+    _isObject(obj) {
+        return typeof obj === "object" && obj != null && !Array.isArray(obj);
     }
 
     contains(node) {

@@ -7,7 +7,7 @@
 		var a = factory();
 		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
 	}
-})(this, function() {
+})(typeof self !== 'undefined' ? self : this, function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -274,13 +274,32 @@ var ValueExpression = function (_Expression) {
     }
 
     _createClass(ValueExpression, [{
+        key: "_cloneObject",
+        value: function _cloneObject(obj) {
+            var _this2 = this;
+
+            var clone = void 0;
+
+            if (obj instanceof Date) {
+                return new Date(obj);
+            } else if (this._isObject(obj)) {
+                clone = {};
+            } else if (Array.isArray(obj)) {
+                clone = [];
+            } else {
+                return obj;
+            }
+
+            Object.keys(obj).forEach(function (key) {
+                clone[key] = _this2._cloneObject(obj[key]);
+            });
+
+            return clone;
+        }
+    }, {
         key: "copy",
         value: function copy() {
-            var value = this.value;
-
-            if ((typeof value === "undefined" ? "undefined" : _typeof(value)) === "object" && value != null) {
-                value = JSON.parse(JSON.stringify(value));
-            }
+            var value = this._cloneObject(this.value);
 
             return new ValueExpression(this.nodeName, value);
         }
@@ -291,6 +310,11 @@ var ValueExpression = function (_Expression) {
                 return true;
             }
             return false;
+        }
+    }, {
+        key: "_isObject",
+        value: function _isObject(obj) {
+            return (typeof obj === "undefined" ? "undefined" : _typeof(obj)) === "object" && obj != null && !Array.isArray(obj);
         }
     }, {
         key: "contains",
@@ -388,6 +412,8 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _Expression = __webpack_require__(0);
@@ -478,10 +504,33 @@ var Queryable = function () {
                 throw new Error("No provider found.");
             }
         }
+
+        // _cloneObject(object){
+        //     return JSON.parse(JSON.stringify(object));
+        // }
+
     }, {
         key: "_cloneObject",
-        value: function _cloneObject(object) {
-            return JSON.parse(JSON.stringify(object));
+        value: function _cloneObject(obj) {
+            var _this2 = this;
+
+            var clone = void 0;
+
+            if (obj instanceof Date) {
+                return new Date(obj);
+            } else if (this._isObject(obj)) {
+                clone = {};
+            } else if (Array.isArray(obj)) {
+                clone = [];
+            } else {
+                return obj;
+            }
+
+            Object.keys(obj).forEach(function (key) {
+                clone[key] = _this2._cloneObject(obj[key]);
+            });
+
+            return clone;
         }
     }, {
         key: "_copyQuery",
@@ -539,6 +588,11 @@ var Queryable = function () {
             return this.copy(query);
         }
     }, {
+        key: "_isObject",
+        value: function _isObject(obj) {
+            return (typeof obj === "undefined" ? "undefined" : _typeof(obj)) === "object" && obj != null && !Array.isArray(obj);
+        }
+    }, {
         key: "_isValidMapping",
         value: function _isValidMapping(mapping) {
             if (mapping == null) {
@@ -576,10 +630,10 @@ var Queryable = function () {
     }, {
         key: "_selectArray",
         value: function _selectArray(properties) {
-            var _this2 = this;
+            var _this3 = this;
 
             var hasValidMapping = properties.every(function (property) {
-                return _this2._validatePropertyName(property);
+                return _this3._validatePropertyName(property);
             });
 
             if (!hasValidMapping) {
@@ -598,11 +652,11 @@ var Queryable = function () {
     }, {
         key: "_selectObject",
         value: function _selectObject(mapping) {
-            var _this3 = this;
+            var _this4 = this;
 
             var mappingKeys = Object.keys(mapping);
             var hasValidMapping = mappingKeys.every(function (key) {
-                return _this3._validatePropertyName(key) && _this3._validatePropertyName(mapping[key]);
+                return _this4._validatePropertyName(key) && _this4._validatePropertyName(mapping[key]);
             });
 
             if (!hasValidMapping) {
@@ -649,7 +703,7 @@ var Queryable = function () {
     }, {
         key: "merge",
         value: function merge(queryable) {
-            var _this4 = this;
+            var _this5 = this;
 
             if (!(queryable instanceof Queryable)) {
                 throw new Error("Expected a queryable to be passed in.");
@@ -677,7 +731,7 @@ var Queryable = function () {
             }
 
             Object.keys(query.select).forEach(function (key) {
-                cloneQuery.select[key] = _this4._cloneObject(query.select[key]);
+                cloneQuery.select[key] = _this5._cloneObject(query.select[key]);
             });
 
             query.orderBy.forEach(function (orderBy) {
@@ -686,7 +740,7 @@ var Queryable = function () {
                 });
 
                 if (index === -1) {
-                    cloneQuery.orderBy.push(_this4._cloneObject(orderBy));
+                    cloneQuery.orderBy.push(_this5._cloneObject(orderBy));
                 }
             });
 

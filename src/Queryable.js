@@ -58,8 +58,28 @@ export default class Queryable {
         }
     }
 
-    _cloneObject(object) {
-        return JSON.parse(JSON.stringify(object));
+    // _cloneObject(object){
+    //     return JSON.parse(JSON.stringify(object));
+    // }
+
+    _cloneObject(obj) {
+        let clone;
+
+        if (obj instanceof Date) {
+            return new Date(obj);
+        } else if (this._isObject(obj)) {
+            clone = {};
+        } else if (Array.isArray(obj)) {
+            clone = [];
+        } else {
+            return obj;
+        }
+
+        Object.keys(obj).forEach((key) => {
+            clone[key] = this._cloneObject(obj[key]);
+        });
+
+        return clone;
     }
 
     _copyQuery(query) {
@@ -114,6 +134,10 @@ export default class Queryable {
         }
 
         return this.copy(query);
+    }
+
+    _isObject(obj) {
+        return typeof obj === "object" && obj != null && !Array.isArray(obj);
     }
 
     _isValidMapping(mapping) {

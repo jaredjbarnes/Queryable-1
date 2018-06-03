@@ -41,7 +41,7 @@ exports["Queryable: Constructor with query (where: chain)"] = function () {
     assert.equal("Barnes", query.where.children[0].children[1].children[1].value);
 };
 
-exports["Queryable: Constructor with query (where: expressionBuilder.and)"] = function() {
+exports["Queryable: Constructor with query (where: expressionBuilder.and)"] = function () {
     let queryable = new Queryable();
     queryable = queryable
         .where(expBuilder => {
@@ -61,7 +61,7 @@ exports["Queryable: Constructor with query (where: expressionBuilder.and)"] = fu
     assert.equal("Barnes", query.where.children[0].children[1].children[1].value);
 }
 
-exports["Queryable: Constructor with query (where: expressionBuilder.or)"] = function() {
+exports["Queryable: Constructor with query (where: expressionBuilder.or)"] = function () {
     let queryable = new Queryable();
     queryable = queryable
         .where(expBuilder => {
@@ -513,4 +513,12 @@ exports["Queryable.toJson: isIn with query."] = function () {
     let json2 = queryable2.toJson();
 
     assert.equal(json, json2);
+}
+
+
+exports["Queryable: Check date is still date when refining queryable."] = function () {
+    let queryable = new Queryable("Target").where((expBuilder) => {
+        return expBuilder.property("property").isEqualTo(new Date(1970, 1, 1));
+    }).select(["sourceId"]);
+
 }
